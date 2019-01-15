@@ -1,6 +1,13 @@
-Grass1-0-1
-Grass2-0-2
-Dirt-2-1
+Dirt-0-1
+Grass-1-1
+Bush-4-1
+Tree1-5-1
+Tree2-6-1
+Tree3-5-2
+Tree4-6-2
+Bomb1-5-3
+Bomb2-5-4
+Bomb3-5-5
 PathVertical-1-1
 PathCorner-1-2
 PathHorizontal-2-2
