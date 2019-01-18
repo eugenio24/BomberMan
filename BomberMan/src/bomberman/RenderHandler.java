@@ -49,7 +49,7 @@ public class RenderHandler {
                 for(int yZoomPosition = 0; yZoomPosition < yZoom; yZoomPosition++)
                     for(int xZoomPosition = 0; xZoomPosition < xZoom; xZoomPosition++)
                         setPixel(renderPixels[x + y * renderWidth], (x * xZoom) + xPosition + xZoomPosition, ((y * yZoom) + yPosition + yZoomPosition));
-    }
+    }   
 
     private void setPixel(int pixel, int x, int y) {
         int pixelIndex = x + y * view.getWidth();

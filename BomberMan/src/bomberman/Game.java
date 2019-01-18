@@ -1,15 +1,21 @@
 
 package bomberman;
 
+import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 
 /**
  *
@@ -20,9 +26,9 @@ public class Game extends JFrame implements Runnable {
     private RenderHandler renderer;
 
     private SpriteSheet sheet;
-    private Sprite sprite;
     private Tiles tiles;
     
+    private Map map;
     private Player player;
     
     private KeyboardListener keyListener = new KeyboardListener();
@@ -30,19 +36,29 @@ public class Game extends JFrame implements Runnable {
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     
     public Game() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(0,0, 1000, 800);
-        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
+             
+        setMinimumSize(new Dimension(1000, 800));
+        setPreferredSize(new Dimension(1000, 800));      
+//        setResizable(false);
+                        
         add(canvas);
         setVisible(true);
         canvas.createBufferStrategy(3);
-
-        renderer = new RenderHandler(getWidth(), getHeight());
+                       
+        pack();
         
-        sheet = new SpriteSheet(loadImage("testSprite.png"));
+        setLocationRelativeTo(null);
+        
+        
+        renderer = new RenderHandler(getContentPane().getWidth(), getContentPane().getHeight());
+        
+        sheet = new SpriteSheet(loadImage("SpritesGame.png"));
         sheet.loadSprites(16, 16);
-        sprite = sheet.getSprite(4,1);
+        
         tiles = new Tiles(new File("src/bomberman/testTiles.txt"), sheet);
+
+        map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
         player = new Player();
         gameObjects.add(player);
@@ -65,11 +81,11 @@ public class Game extends JFrame implements Runnable {
      */
     public void render() {
         BufferStrategy bufferStrategy = canvas.getBufferStrategy();
-        Graphics graphics = bufferStrategy.getDrawGraphics();
+        Graphics graphics = bufferStrategy.getDrawGraphics();    
         
-        renderer.renderSprite(sprite, 0, 0, 5, 5);
-        tiles.renderTile(0, renderer, 100, 10, 10, 10);
-
+        //carico lo sfondo
+        map.render(renderer);                
+        
         for(GameObject obj: gameObjects){
             obj.render(renderer, 3, 3);
         }
@@ -122,6 +138,11 @@ public class Game extends JFrame implements Runnable {
 
     public KeyboardListener getKeyListener() {
         return keyListener;
+    }
+    
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(1000, 800);
     }
     
 }
