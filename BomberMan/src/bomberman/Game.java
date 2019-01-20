@@ -38,8 +38,8 @@ public class Game extends JFrame implements Runnable {
     public Game() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
              
-        setMinimumSize(new Dimension(1000, 800));
-        setPreferredSize(new Dimension(1000, 800));      
+        setMinimumSize(new Dimension(1042, 879));
+        setPreferredSize(new Dimension(1042, 879));      
 //        setResizable(false);
                         
         add(canvas);
@@ -60,7 +60,7 @@ public class Game extends JFrame implements Runnable {
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player();
+        player = new Player(sheet.getSprite(1, 4));
         gameObjects.add(player);
         
         canvas.addKeyListener(keyListener);

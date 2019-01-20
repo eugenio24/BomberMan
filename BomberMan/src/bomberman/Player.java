@@ -9,14 +9,18 @@ public class Player implements GameObject{
     private Rectangle playerRect;
     int speed = 10;
     
-    public Player(){
+    Sprite sprite;
+    
+    public Player(Sprite sprite){
         this.playerRect = new Rectangle(200, 200, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
+        
+        this.sprite = sprite;
     }
 
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
-        renderer.renderRectangle(playerRect, xZoom, yZoom); 
+        renderer.renderSprite(sprite, playerRect.getX(), playerRect.getY(), xZoom, yZoom);
     }
 
     @Override

@@ -12,6 +12,8 @@ import java.awt.image.DataBufferInt;
 public class RenderHandler {
     private BufferedImage view;
     private int[] pixels;
+    
+    private int alpha = 0xFF000000;     // colore di sfondo dello spritesheet, i pixel di questo colore non vengono stampati
 
     public RenderHandler(int width, int height) {
         //Create a BufferedImage that will represent our view.
@@ -53,8 +55,9 @@ public class RenderHandler {
 
     private void setPixel(int pixel, int x, int y) {
         int pixelIndex = x + y * view.getWidth();
-        if(pixelIndex < pixels.length && pixelIndex >= 0)
-            pixels[pixelIndex] = pixel;
+
+        if(pixelIndex < pixels.length && pixelIndex >= 0 && pixel != alpha)
+            pixels[pixelIndex] = pixel;        
     }
     
     public void clear(){
