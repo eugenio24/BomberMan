@@ -12,8 +12,8 @@ public class Map {
     private ArrayList<MappedTile> indistructibleTiles = new ArrayList<>();
     
     private Tiles tileSet;
-    private int xZoom;
-    private int yZoom;
+    private final int xZoom;
+    private final int yZoom;
     
     public Map(Tiles tileSet, int xZoom, int yZoom, int screenX, int screenY){
         this.tileSet = tileSet;
@@ -34,13 +34,25 @@ public class Map {
     }
     
     private void fillIndestructibleBlock(int screenX, int screenY){
-        backgroundTiles.add(new MappedTile(2, 16*xZoom, 16*yZoom));
+        for(int y = 16*yZoom; y<screenY-16*yZoom; y+=16*yZoom*2){
+            for(int x = 16*xZoom; x<screenX-16*xZoom; x+=16*xZoom*2){                
+                indistructibleTiles.add(new MappedTile(0, x, y));
+            }
+        }        
     }
     
     public void render(RenderHandler renderer){
-        for(MappedTile t: backgroundTiles){            
+        backgroundTiles.forEach((t) -> {            
             tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
-        }
+        });
+        
+        indistructibleTiles.forEach((t) -> {            
+            tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
+        });
+    }
+    
+    public boolean collide(java.awt.Rectangle playerRect){
+        return indistructibleTiles.stream().anyMatch((blockTile) -> (playerRect.intersects(blockTile.getBounds())));
     }
     
     private class MappedTile {
@@ -52,6 +64,10 @@ public class Map {
             this.tileID = tile;
             this.x = x;
             this.y = y;
+        }     
+        
+        public java.awt.Rectangle getBounds(){
+            return new java.awt.Rectangle(x, y, 16*xZoom, 16*yZoom);
         }
     }
 }

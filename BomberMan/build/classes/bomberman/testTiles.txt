@@ -11,5 +11,3 @@ Bomb2-5-3
 Bomb3-5-4
 Man-1-4
 PathVertical-1-1
-PathCorner-1-2
-PathHorizontal-2-2

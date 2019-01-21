@@ -38,8 +38,8 @@ public class Game extends JFrame implements Runnable {
     public Game() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
              
-        setMinimumSize(new Dimension(1042, 879));
-        setPreferredSize(new Dimension(1042, 879));      
+        setMinimumSize(new Dimension(978, 879));
+        setPreferredSize(new Dimension(978, 879));      
 //        setResizable(false);
                         
         add(canvas);
@@ -71,9 +71,9 @@ public class Game extends JFrame implements Runnable {
      * Metodo per gestire la logica
      */
     public void update() {
-        for(GameObject obj: gameObjects){
+        gameObjects.forEach((obj) -> {
             obj.update(this);
-        }
+        });
     }
 
     /**
@@ -86,9 +86,9 @@ public class Game extends JFrame implements Runnable {
         //carico lo sfondo
         map.render(renderer);                
         
-        for(GameObject obj: gameObjects){
+        gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
-        }
+        });
         
         renderer.render(graphics);
 
@@ -138,11 +138,10 @@ public class Game extends JFrame implements Runnable {
 
     public KeyboardListener getKeyListener() {
         return keyListener;
-    }
+    }    
     
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(1000, 800);
+    public Map getMap(){
+        return this.map;
     }
     
 }

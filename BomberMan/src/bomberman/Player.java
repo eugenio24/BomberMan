@@ -7,12 +7,12 @@ package bomberman;
  */
 public class Player implements GameObject{
     private Rectangle playerRect;
-    int speed = 10;
+    int speed = 3;
     
     Sprite sprite;
     
     public Player(Sprite sprite){
-        this.playerRect = new Rectangle(200, 200, 16, 16);
+        this.playerRect = new Rectangle(0, 0, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
         
         this.sprite = sprite;
@@ -26,6 +26,10 @@ public class Player implements GameObject{
     @Override
     public void update(Game game) {
         KeyboardListener keyListener = game.getKeyListener();
+        
+        int precX = playerRect.getX();
+        int precY = playerRect.getY();
+        
         if(keyListener.up()){
             playerRect.setY(playerRect.getY()-speed);
             if(playerRect.getY()<0){
@@ -49,6 +53,11 @@ public class Player implements GameObject{
             if(playerRect.getX() > game.getContentPane().getWidth()-playerRect.getW()*3){
                 playerRect.setX(game.getContentPane().getWidth()-playerRect.getW()*3); 
             }
+        }
+        
+        if(game.getMap().collide(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
+            playerRect.setX(precX);
+            playerRect.setY(precY);
         }
     }
 }
