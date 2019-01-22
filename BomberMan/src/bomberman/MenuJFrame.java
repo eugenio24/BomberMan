@@ -37,6 +37,11 @@ public class MenuJFrame extends javax.swing.JFrame {
         btnExit.setContentAreaFilled(false);
         btnExit.setBorderPainted(false);
         
+        btnOptions.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnOptions.setOpaque(false);
+        btnOptions.setContentAreaFilled(false);
+        btnOptions.setBorderPainted(false);
+        
         pack();
     }
 
@@ -51,6 +56,7 @@ public class MenuJFrame extends javax.swing.JFrame {
 
         btnStart = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
+        btnOptions = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -75,13 +81,23 @@ public class MenuJFrame extends javax.swing.JFrame {
             }
         });
         getContentPane().add(btnExit);
-        btnExit.setBounds(540, 620, 340, 90);
+        btnExit.setBounds(540, 620, 350, 90);
+
+        btnOptions.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnOptions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOptionsActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnOptions);
+        btnOptions.setBounds(540, 500, 350, 90);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bomberman/menuBackground.jpg"))); // NOI18N
         getContentPane().add(jLabel1);
-        jLabel1.setBounds(0, 0, 978, 880);
+        jLabel1.setBounds(0, 0, 978, 879);
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
@@ -92,6 +108,10 @@ public class MenuJFrame extends javax.swing.JFrame {
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnOptionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOptionsActionPerformed
+        
+    }//GEN-LAST:event_btnOptionsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -125,6 +145,7 @@ public class MenuJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExit;
+    private javax.swing.JButton btnOptions;
     private javax.swing.JButton btnStart;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
