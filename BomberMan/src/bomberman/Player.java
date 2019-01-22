@@ -55,7 +55,12 @@ public class Player implements GameObject{
             }
         }
         
-        if(game.getMap().collide(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
+        if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
+            playerRect.setX(precX);
+            playerRect.setY(precY);
+        }
+        
+        if(game.getMap().collideBush(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
             playerRect.setX(precX);
             playerRect.setY(precY);
         }

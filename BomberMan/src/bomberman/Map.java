@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class Map {
     private ArrayList<MappedTile> backgroundTiles = new ArrayList<>();
     private ArrayList<MappedTile> indistructibleTiles = new ArrayList<>();
+    private ArrayList<MappedTile> bushTiles = new ArrayList<>();
     
     private Tiles tileSet;
     private final int xZoom;
@@ -23,6 +24,8 @@ public class Map {
         fillBackgrond(screenX, screenY);
         
         fillIndestructibleBlock(screenX, screenY);
+        
+        fillBush(screenX, screenY);
     }
     
     private void fillBackgrond(int screenX, int screenY){
@@ -41,6 +44,14 @@ public class Map {
         }        
     }
     
+    private void fillBush(int screenX, int screenY){
+        for(int y = 32*yZoom; y<screenY-32*yZoom; y+=32*yZoom*2){
+            for(int x = 16*xZoom; x<screenX-16*xZoom; x+=16*xZoom*2){                
+                bushTiles.add(new MappedTile(3, x, y));
+            }
+        }        
+    }
+    
     public void render(RenderHandler renderer){
         backgroundTiles.forEach((t) -> {            
             tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
@@ -49,10 +60,18 @@ public class Map {
         indistructibleTiles.forEach((t) -> {            
             tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
         });
+        
+        bushTiles.forEach((t) -> {            
+            tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
+        });
     }
     
-    public boolean collide(java.awt.Rectangle playerRect){
+    public boolean collideIndestructibleBlock(java.awt.Rectangle playerRect){
         return indistructibleTiles.stream().anyMatch((blockTile) -> (playerRect.intersects(blockTile.getBounds())));
+    }
+    
+    public boolean collideBush(java.awt.Rectangle playerRect){
+        return bushTiles.stream().anyMatch((blockTile) -> (playerRect.intersects(blockTile.getBounds())));
     }
     
     private class MappedTile {
