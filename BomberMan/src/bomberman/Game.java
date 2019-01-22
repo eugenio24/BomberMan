@@ -41,7 +41,7 @@ public class Game extends JFrame implements Runnable {
         setMinimumSize(new Dimension(978, 879));
         setPreferredSize(new Dimension(978, 879));      
 //        setResizable(false);
-                        
+        
         add(canvas);
         setVisible(true);
         canvas.createBufferStrategy(3);
@@ -66,7 +66,7 @@ public class Game extends JFrame implements Runnable {
         canvas.addKeyListener(keyListener);
         canvas.requestFocus();
     }
-    
+       
     /**
      * Metodo per gestire la logica
      */
