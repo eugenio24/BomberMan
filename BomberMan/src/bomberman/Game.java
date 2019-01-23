@@ -30,6 +30,7 @@ public class Game extends JFrame implements Runnable {
     
     private Map map;
     private Player player;
+    private EscMenu escMenu;
     
     private KeyboardListener keyListener = new KeyboardListener();
     
@@ -60,8 +61,11 @@ public class Game extends JFrame implements Runnable {
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(sheet.getSprite(1, 4));
+        player = new Player(sheet);
+        escMenu = new EscMenu();
+        
         gameObjects.add(player);
+        gameObjects.add(escMenu);
         
         canvas.addKeyListener(keyListener);
         canvas.requestFocus();
@@ -84,7 +88,7 @@ public class Game extends JFrame implements Runnable {
         Graphics graphics = bufferStrategy.getDrawGraphics();    
         
         //carico lo sfondo
-        map.render(renderer);                
+        map.render(renderer);
         
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
