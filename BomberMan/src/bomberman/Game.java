@@ -22,6 +22,7 @@ import javax.swing.UIManager;
  * @author Eugenio
  */
 public class Game extends JFrame implements Runnable {
+    private boolean thRunning = true;
     private Canvas canvas = new Canvas();
     private RenderHandler renderer;
 
@@ -33,6 +34,7 @@ public class Game extends JFrame implements Runnable {
     private EscMenu escMenu;
     
     private KeyboardListener keyListener = new KeyboardListener();
+    private MouseListener mouseListener;
     
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     
@@ -62,13 +64,18 @@ public class Game extends JFrame implements Runnable {
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
         player = new Player(sheet);
-        escMenu = new EscMenu();
+        escMenu = new EscMenu(this);
+        escMenu.addMouseListener(mouseListener);
+        
         
         gameObjects.add(player);
         gameObjects.add(escMenu);
         
+        mouseListener = new MouseListener(escMenu);
         canvas.addKeyListener(keyListener);
+        canvas.addMouseListener(mouseListener);
         canvas.requestFocus();
+        
     }
        
     /**
@@ -126,7 +133,7 @@ public class Game extends JFrame implements Runnable {
         double changeInSeconds = 0;
 
         // GAME LOOP
-        while(true) {
+        while(thRunning) {
             long now = System.nanoTime();
 
             changeInSeconds += (now - lastTime) / nanoSecondConversion;
@@ -148,4 +155,8 @@ public class Game extends JFrame implements Runnable {
         return this.map;
     }
     
+    public void closeGame(){
+        thRunning = false;
+        this.dispose();
+    }
 }

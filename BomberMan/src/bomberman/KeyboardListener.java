@@ -13,6 +13,7 @@ import java.util.Dictionary;
  */
 public class KeyboardListener implements KeyListener, FocusListener{
     public boolean[] keys = new boolean[120];
+    private boolean EscTyped = false;
 
     @Override
     public void keyPressed(KeyEvent event) {
@@ -28,6 +29,10 @@ public class KeyboardListener implements KeyListener, FocusListener{
 
         if(keyCode < keys.length)
             keys[keyCode] = false;
+        
+        if(keyCode == KeyEvent.VK_ESCAPE){
+            EscTyped = EscTyped != true;
+        }
     }
 
     @Override
@@ -63,6 +68,6 @@ public class KeyboardListener implements KeyListener, FocusListener{
     }
 
     public boolean esc(){
-        return keys[KeyEvent.VK_ESCAPE];
+        return EscTyped;
     }
 }

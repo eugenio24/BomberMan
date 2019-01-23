@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author matte
+ * @author matteo
  */
 public class MenuJFrame extends javax.swing.JFrame {
 

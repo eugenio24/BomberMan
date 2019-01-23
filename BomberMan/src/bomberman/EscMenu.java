@@ -17,12 +17,16 @@ import javax.imageio.ImageIO;
  */
 public class EscMenu implements GameObject{
     
+    private Game game;
+    private MouseListener mouseListener;
     private boolean isMenuDisplayed = false;
-    BufferedImage convertedImg;
+    private BufferedImage convertedImg;
 
-    public EscMenu() {
+    public EscMenu(Game gm) { 
+        game = gm;
         try {
-            BufferedImage bufImg = ImageIO.read(getClass().getResource("menuBackground.jpg"));
+            //Carica l'immagine del menù esc
+            BufferedImage bufImg = ImageIO.read(getClass().getResource("escMenu.jpg"));
             convertedImg = new BufferedImage(bufImg.getWidth(), bufImg.getHeight(), BufferedImage.TYPE_INT_RGB);
             convertedImg.getGraphics().drawImage(bufImg, 0, 0, null);
         } catch (IOException ex) {
@@ -33,23 +37,31 @@ public class EscMenu implements GameObject{
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
         if(isMenuDisplayed){
-            renderer.renderImage(convertedImg, 0, 0, 0, 0);
-            System.out.println("MENU IN SHOW");
+            //Se il menù è aperto, chiede di stamparlo a video al renderer
+            renderer.renderImage(convertedImg, 177, 240, 1, 1);
         }
     }
 
     @Override
     public void update(Game game) {
+        //Controlla se il tasto esc è stato premuto, assegna il valore (true o false) alla variabile privata isMenuDisplayed
         KeyboardListener keyListener = game.getKeyListener();
+        isMenuDisplayed = keyListener.esc();
+    }
+    
+    public void addMouseListener(MouseListener ml){
+        mouseListener = ml;
+    }
+    
+    public void exitClicked(){
+        game.closeGame();
+    }
+    
+    public void optionsClicked(){
+        
+    }
 
-        if(keyListener.esc()){
-            if(isMenuDisplayed == true){
-                isMenuDisplayed = false;
-                System.out.println("MENU OFF");
-            }else{
-                isMenuDisplayed = true;
-                System.out.println("MENU ON");
-            }
-        }
+    public boolean isIsMenuDisplayed() {
+        return isMenuDisplayed;
     }
 }
