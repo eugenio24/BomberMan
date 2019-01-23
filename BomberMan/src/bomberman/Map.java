@@ -2,6 +2,7 @@
 package bomberman;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  *
@@ -39,17 +40,30 @@ public class Map {
     private void fillIndestructibleBlock(int screenX, int screenY){
         for(int y = 16*yZoom; y<screenY-16*yZoom; y+=16*yZoom*2){
             for(int x = 16*xZoom; x<screenX-16*xZoom; x+=16*xZoom*2){                
-                indistructibleTiles.add(new MappedTile(0, x, y));
+                indistructibleTiles.add(new MappedTile(2, x, y));
             }
         }        
     }
     
     private void fillBush(int screenX, int screenY){
-        for(int y = 32*yZoom; y<screenY-32*yZoom; y+=32*yZoom*2){
-            for(int x = 16*xZoom; x<screenX-16*xZoom; x+=16*xZoom*2){                
-                bushTiles.add(new MappedTile(3, x, y));
+//        for(int y = 0; y<screenY; y+=16*yZoom){
+//            for(int x = 0; x<screenX; x+=16*xZoom){
+            Random rand = new Random();
+            for(int i=0 ; i<200; i++){
+                int x = rand.nextInt(16)*64;
+                int y = rand.nextInt(16)*64;
+                boolean xx = true;
+                for(MappedTile indTile: indistructibleTiles){
+                    if(indTile.x == x && indTile.y == y){
+                        xx = false;
+                    }
+                }
+                if(xx) {                                    
+                    bushTiles.add(new MappedTile(3, x, y));
+                }
             }
-        }        
+//            }
+//        }        
     }
     
     public void render(RenderHandler renderer){
