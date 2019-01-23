@@ -57,4 +57,8 @@ public class KeyboardListener implements KeyListener, FocusListener{
     public boolean right() {
         return keys[KeyEvent.VK_D] || keys[KeyEvent.VK_RIGHT];
     }
+    
+    public boolean esc(){
+        return keys[KeyEvent.VK_ESCAPE];
+    }
 }
