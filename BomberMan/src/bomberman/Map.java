@@ -1,8 +1,10 @@
 
 package bomberman;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Scanner;
 
 /**
  *
@@ -46,36 +48,35 @@ public class Map {
     }
     
     private void fillBush(int screenX, int screenY){
-//        for(int y = 0; y<screenY; y+=16*yZoom){
-//            for(int x = 0; x<screenX; x+=16*xZoom){
-            Random rand = new Random();
-            for(int i=0 ; i<200; i++){
-                int x = rand.nextInt(16)*64;
-                int y = rand.nextInt(16)*64;
-                boolean xx = true;
-                for(MappedTile indTile: indistructibleTiles){
-                    if(indTile.x == x && indTile.y == y){
-                        xx = false;
-                    }
-                }
-                if(xx) {                                    
-                    bushTiles.add(new MappedTile(3, x, y));
-                }
+        try {
+            Scanner scan = new Scanner(new File("src/bomberman/map.txt"));
+            
+            while(scan.hasNext()){
+                String[] splitted = scan.nextLine().split("-");
+                int x = Integer.parseInt(splitted[0]);
+                int y = Integer.parseInt(splitted[1]);
+                                
+                bushTiles.add(new MappedTile(3, x, y));                
             }
-//            }
-//        }        
+        } catch (FileNotFoundException ex) {
+            System.err.println(ex.getMessage());
+        }               
     }
     
+    /**
+     * Renderizza la mappa
+     * @param renderer RenderHandler
+     */
     public void render(RenderHandler renderer){
-        backgroundTiles.forEach((t) -> {            
+        backgroundTiles.forEach((t) -> {
             tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
         });
         
-        indistructibleTiles.forEach((t) -> {            
+        indistructibleTiles.forEach((t) -> {
             tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
         });
         
-        bushTiles.forEach((t) -> {            
+        bushTiles.forEach((t) -> {
             tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
         });
     }

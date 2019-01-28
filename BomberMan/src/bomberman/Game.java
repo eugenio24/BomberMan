@@ -97,6 +97,11 @@ public class Game extends JFrame implements Runnable {
         renderer.clear();
     }
     
+    /**
+     * Metodo che carica un immagine
+     * @param path Path
+     * @return Bufferde Image
+     */
     private BufferedImage loadImage(String path) {
         try 
         {
@@ -135,6 +140,8 @@ public class Game extends JFrame implements Runnable {
             lastTime = now;
         }
     }
+    
+    // GETTER
 
     public KeyboardListener getKeyListener() {
         return keyListener;
