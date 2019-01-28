@@ -12,6 +12,7 @@ import java.awt.event.KeyListener;
  */
 public class KeyboardListener implements KeyListener, FocusListener{
     public boolean[] keys = new boolean[120];
+    private boolean EscTyped = false;
 
     @Override
     public void keyPressed(KeyEvent event) {
@@ -27,6 +28,10 @@ public class KeyboardListener implements KeyListener, FocusListener{
 
         if(keyCode < keys.length)
             keys[keyCode] = false;
+        
+        if(keyCode == KeyEvent.VK_ESCAPE){
+            EscTyped = EscTyped != true;
+        }
     }
 
     @Override
@@ -55,5 +60,13 @@ public class KeyboardListener implements KeyListener, FocusListener{
 
     public boolean right() {
         return keys[KeyEvent.VK_D] || keys[KeyEvent.VK_RIGHT];
+    }
+    
+    public boolean space() {
+        return keys[KeyEvent.VK_SPACE];
+    }
+
+    public boolean esc(){
+        return EscTyped;
     }
 }
