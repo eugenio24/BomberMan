@@ -150,6 +150,7 @@ public class Game extends JFrame implements Runnable {
             render();
             lastTime = now;
         }
+        this.dispose();
     }
     
     // GETTER
@@ -164,6 +165,5 @@ public class Game extends JFrame implements Runnable {
     
     public void closeGame(){
         thRunning = false;
-        this.dispose();
     }
 }
