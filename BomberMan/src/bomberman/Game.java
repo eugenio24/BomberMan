@@ -63,7 +63,7 @@ public class Game extends JFrame implements Runnable {
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(sheet);
+        player = new Player(new SpriteSheet(loadImage("playerSpriteSheet.png")));
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
         
@@ -99,7 +99,7 @@ public class Game extends JFrame implements Runnable {
         
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
-        });
+        });                
         
         renderer.render(graphics);
 

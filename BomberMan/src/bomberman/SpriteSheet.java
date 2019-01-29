@@ -31,21 +31,18 @@ public class SpriteSheet {
         this.loadedSprites = new Sprite[(SIZE_X / spriteSizeX) * (SIZE_Y / spriteSizeY)];
 
         int spriteID = 0;
-        for(int y = 0; y < SIZE_Y; y += spriteSizeY)
-        {
-            for(int x = 0; x < SIZE_X; x += spriteSizeX)
-            {
+        for(int y = 0; y < SIZE_Y; y += spriteSizeY) {
+            for(int x = 0; x < SIZE_X; x += spriteSizeX) {
                 loadedSprites[spriteID] = new Sprite(this, x, y, spriteSizeX, spriteSizeY);
                 spriteID++;
             }
         }
 
-        spritesLoaded = true;
+        spritesLoaded = true;                
     }
 
     public Sprite getSprite(int x, int y) {
-        if(spritesLoaded)
-        {
+        if(spritesLoaded) {
             int spriteID = x + y * (SIZE_X / spriteSizeX);
             if(spriteID < loadedSprites.length) 
                 return loadedSprites[spriteID];                
