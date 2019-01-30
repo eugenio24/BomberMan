@@ -1,6 +1,7 @@
 
 package bomberman;
 
+import bomberman.PowerUp.PowerUpType;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
@@ -67,6 +68,7 @@ public class Game extends JFrame implements Runnable {
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
         
+        gameObjects.add(p);
         
         gameObjects.add(player);
         gameObjects.add(escMenu);
@@ -87,6 +89,8 @@ public class Game extends JFrame implements Runnable {
         });
     }
 
+    PowerUp p = new PowerUp(0, 0, new SpriteSheet(loadImage("powerUpsSpriteSheet.png")), PowerUpType.ACCELERATION);
+    
     /**
      * Metodo per visualizzare il gioco
      */
@@ -100,6 +104,7 @@ public class Game extends JFrame implements Runnable {
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
         });                
+                
         
         renderer.render(graphics);
 
@@ -114,16 +119,14 @@ public class Game extends JFrame implements Runnable {
      * @return Bufferde Image
      */
     private BufferedImage loadImage(String path) {
-        try 
-        {
+        try {
             BufferedImage loadedImage = ImageIO.read(Game.class.getResource(path));
             BufferedImage formattedImage = new BufferedImage(loadedImage.getWidth(), loadedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             formattedImage.getGraphics().drawImage(loadedImage, 0, 0, null);
 
             return formattedImage;
         }
-        catch(IOException ex) 
-        {
+        catch(IOException ex) {
             System.err.println(ex.getMessage());
             return null;
         }
