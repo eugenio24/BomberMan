@@ -2,6 +2,7 @@
 package bomberman;
 
 import com.sun.glass.events.KeyEvent;
+import java.util.ArrayList;
 
 /**
  *
@@ -12,12 +13,15 @@ public class Player implements GameObject{
     int speed = 3;
     String control = "";
     SpriteSheet sheet;
+    Bomb bomb;
     
-    public Player(SpriteSheet sheet){
+    public Player(SpriteSheet sheet, ArrayList<GameObject> obj){
         this.playerRect = new Rectangle(0, 0, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
         
         this.sheet = sheet;
+        bomb = new Bomb(sheet);
+        obj.add(bomb);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class Player implements GameObject{
         }
         
         if(keyListener.space()){
-            
+            bomb.setControl(1);
         }
 
         if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
