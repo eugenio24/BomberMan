@@ -1,6 +1,5 @@
 
 package bomberman;
-
 /**
  *
  * @author Eugenio
