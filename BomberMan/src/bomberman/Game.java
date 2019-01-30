@@ -32,7 +32,6 @@ public class Game extends JFrame implements Runnable {
     private Map map;
     private Player player;
     private EscMenu escMenu;
-    private Bomb bomb;
     
     private KeyboardListener keyListener = new KeyboardListener();
     private MouseListener mouseListener;
@@ -64,7 +63,7 @@ public class Game extends JFrame implements Runnable {
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(sheet,gameObjects);
+        player = new Player(new SpriteSheet(loadImage("playerSpriteSheet.png")));
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
         
@@ -100,7 +99,7 @@ public class Game extends JFrame implements Runnable {
         
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
-        });
+        });                
         
         renderer.render(graphics);
 

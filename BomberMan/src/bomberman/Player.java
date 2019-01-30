@@ -1,9 +1,5 @@
 
 package bomberman;
-
-import com.sun.glass.events.KeyEvent;
-import java.util.ArrayList;
-
 /**
  *
  * @author Eugenio
@@ -11,31 +7,39 @@ import java.util.ArrayList;
 public class Player implements GameObject{
     private Rectangle playerRect;
     int speed = 3;
-    String control = "";
+    Direction direction = Direction.DOWN;
     SpriteSheet sheet;
-    Bomb bomb;
     
-    public Player(SpriteSheet sheet, ArrayList<GameObject> obj){
+    public Player(SpriteSheet sheet){
         this.playerRect = new Rectangle(0, 0, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
         
         this.sheet = sheet;
-        bomb = new Bomb(sheet);
-        obj.add(bomb);
+        this.sheet.loadSprites(16, 16);
     }
 
     @Override
-    public void render(RenderHandler renderer, int xZoom, int yZoom) {
-        renderer.renderSprite(sheet.getSprite(1, 4), playerRect.getX(), playerRect.getY(), xZoom, yZoom);
-        switch(control){
-            case "up":
-                renderer.renderSprite(sheet.getSprite(0, 4), playerRect.getX(), playerRect.getY(), xZoom, yZoom);
+    public void render(RenderHandler renderer, int xZoom, int yZoom) {    
+        Sprite sprite;
+        switch(direction){
+            case UP:
+                sprite = sheet.getSprite(1, 0);
                 break;
-            case "down":
-                renderer.renderSprite(sheet.getSprite(1, 4), playerRect.getX(), playerRect.getY(), xZoom, yZoom);
+            case DOWN:
+                sprite = sheet.getSprite(0, 0);
+                break;
+            case LEFT:
+                sprite = sheet.getSprite(3, 0);
+                break;
+            case RIGHT:
+                sprite = sheet.getSprite(2, 0);
+                break;
+            default:
+                sprite = sheet.getSprite(0, 0);
                 break;
         }
                
+        renderer.renderSprite(sprite, playerRect.getX(), playerRect.getY(), xZoom, yZoom);
     }
     
 
@@ -47,7 +51,7 @@ public class Player implements GameObject{
         int precY = playerRect.getY();
         
         if(keyListener.up()){
-            control = "up";
+            direction = Direction.UP;
             playerRect.setY(playerRect.getY()-speed);
             if(playerRect.getY()<0){
                 playerRect.setY(0);
@@ -55,26 +59,28 @@ public class Player implements GameObject{
         }
         if(keyListener.down()){
             playerRect.setY(playerRect.getY()+speed);
-            control = "down";
+            direction = Direction.DOWN;
             if(playerRect.getY() > game.getContentPane().getHeight()-playerRect.getH()*3){
                 playerRect.setY(game.getContentPane().getHeight()-playerRect.getH()*3); 
             }
         }
         if(keyListener.left()){
             playerRect.setX(playerRect.getX()-speed);
+            direction = Direction.LEFT;
             if(playerRect.getX() < 0){
                 playerRect.setX(0);
             }
         }
         if(keyListener.right()){
             playerRect.setX(playerRect.getX()+speed);
+            direction = Direction.RIGHT;
             if(playerRect.getX() > game.getContentPane().getWidth()-playerRect.getW()*3){
                 playerRect.setX(game.getContentPane().getWidth()-playerRect.getW()*3); 
             }
         }
         
         if(keyListener.space()){
-            bomb.setControl(1);
+            
         }
 
         if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
@@ -86,5 +92,9 @@ public class Player implements GameObject{
             playerRect.setX(precX);
             playerRect.setY(precY);
         }
+    }
+    
+    public enum Direction{
+        UP, DOWN, LEFT, RIGHT
     }
 }
