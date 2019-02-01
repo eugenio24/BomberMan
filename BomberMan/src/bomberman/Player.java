@@ -5,12 +5,13 @@ package bomberman;
  * @author Eugenio
  */
 public class Player implements GameObject{
-    private Rectangle playerRect;
+    public Rectangle playerRect;
     int speed = 3;
-    Direction direction = Direction.DOWN;
+    public Direction direction;
     SpriteSheet sheet;
     
     public Player(SpriteSheet sheet){
+        this.direction = Direction.DOWN;
         this.playerRect = new Rectangle(0, 0, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
         

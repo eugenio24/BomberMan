@@ -39,9 +39,11 @@ public class Game extends JFrame implements Runnable {
     
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     
+    private Multiplayer multiplayer;
+    
     public Game() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
-             
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         setMinimumSize(new Dimension(978, 879));
         setPreferredSize(new Dimension(978, 879));      
 //        setResizable(false);
@@ -78,6 +80,7 @@ public class Game extends JFrame implements Runnable {
         canvas.addMouseListener(mouseListener);
         canvas.requestFocus();
         
+        multiplayer = new Multiplayer(this, sheet, renderer, player, gameObjects);
     }
        
     /**
@@ -87,6 +90,7 @@ public class Game extends JFrame implements Runnable {
         gameObjects.forEach((obj) -> {
             obj.update(this);
         });
+        multiplayer.send();
     }
 
     PowerUp p = new PowerUp(0, 0, new SpriteSheet(loadImage("powerUpsSpriteSheet.png")), PowerUpType.ACCELERATION);
@@ -104,7 +108,8 @@ public class Game extends JFrame implements Runnable {
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
         });                
-                
+        
+        multiplayer.render();
         
         renderer.render(graphics);
 
@@ -118,7 +123,7 @@ public class Game extends JFrame implements Runnable {
      * @param path Path
      * @return Bufferde Image
      */
-    private BufferedImage loadImage(String path) {
+    public BufferedImage loadImage(String path) {
         try {
             BufferedImage loadedImage = ImageIO.read(Game.class.getResource(path));
             BufferedImage formattedImage = new BufferedImage(loadedImage.getWidth(), loadedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -135,6 +140,8 @@ public class Game extends JFrame implements Runnable {
     @Override
     public void run() {
         BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+        
+        multiplayer.connectToServer();
 
         long lastTime = System.nanoTime();
         double nanoSecondConversion = 1000000000.0 / 60; //60 frames per second
@@ -153,6 +160,7 @@ public class Game extends JFrame implements Runnable {
             render();
             lastTime = now;
         }
+        multiplayer.closeConnection();
         this.dispose();
     }
     
