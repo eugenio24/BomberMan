@@ -2,21 +2,16 @@
 package bomberman;
 
 import bomberman.PowerUp.PowerUpType;
-import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.UIManager;
 
 /**
  *
@@ -24,17 +19,18 @@ import javax.swing.UIManager;
  */
 public class Game extends JFrame implements Runnable {
     private boolean thRunning = true;
-    private Canvas canvas = new Canvas();
-    private RenderHandler renderer;
+    private final Canvas canvas = new Canvas();
+    private final RenderHandler renderer;
 
     private SpriteSheet sheet;
     private Tiles tiles;
     
     private Map map;
     private Player player;
-    private EscMenu escMenu;
 
-    private KeyboardListener keyListener = new KeyboardListener();
+    private final EscMenu escMenu;
+    
+    private final KeyboardListener keyListener = new KeyboardListener();
     private MouseListener mouseListener;
     
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
@@ -47,8 +43,8 @@ public class Game extends JFrame implements Runnable {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         setMinimumSize(new Dimension(978, 879));
-        setPreferredSize(new Dimension(978, 879));   
-//        setResizable(false);
+        setPreferredSize(new Dimension(978, 879));      
+
         
         add(canvas);
         setVisible(true);
@@ -85,7 +81,7 @@ public class Game extends JFrame implements Runnable {
         canvas.addMouseListener(mouseListener);
         canvas.requestFocus();
         
-        multiplayer = new Multiplayer(this, sheet, renderer, player, gameObjects);
+        multiplayer = new Multiplayer(this);
     }
        
     /**
@@ -190,5 +186,21 @@ public class Game extends JFrame implements Runnable {
     
     public void multiSendBomb(Bomb bomb){
         multiplayer.sendBomb(bomb);
+    }
+    
+    public RenderHandler getRenderer(){
+        return this.renderer;
+    }
+    
+    public SpriteSheet getSpriteSheet(){
+        return this.sheet;
+    }
+    
+    public Player getPlayer(){
+        return this.player;
+    }
+    
+    public ArrayList<GameObject> getGameObjects(){
+        return this.gameObjects;
     }
 }

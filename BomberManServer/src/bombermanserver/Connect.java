@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package bombermanserver;
 
 /**
@@ -13,8 +9,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 //Classe che gestisce la singola connessione verso un client del gioco
 class Connect extends Thread {
@@ -33,9 +27,11 @@ class Connect extends Thread {
             outToClient = new ObjectOutputStream(client.getOutputStream());
             inFromClient = new ObjectInputStream(client.getInputStream());
         } catch (IOException ex) {
+            System.err.println(ex.getMessage());
             try {
                 client.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
             }
         }
     }
@@ -45,45 +41,40 @@ class Connect extends Thread {
         try {
             outToClient.writeUnshared("connected");
         } catch (IOException ex) {
-            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
         }
     }
 
     @Override
     public void run() {  //Thread di lettura
+        while (true) {//aggiungere condizione di uscita
+            try {
+                Object obj = inFromClient.readUnshared();
 
-            while (true) {//aggiungere condizione di uscita
-                try {
-                    Object obj = inFromClient.readUnshared();
-
-                    if (obj.getClass() == String.class) {
-                        switch ((String) obj) {
-                            case "close": //Se arriva un messaggio di chiusura connessione
-                                closeConection(0);
-                                break;
-                            default:
-                                player2.sendObject(obj);
-                                break;
-                        }
+                if (obj instanceof String) {
+                    switch ((String) obj) {
+                        case "close": //Se arriva un messaggio di chiusura connessione
+                            closeConection(0);
+                            break;
+                        default:
+                            player2.sendObject(obj);
+                            break;
                     }
-                    
-                }
-                catch(IOException e){
-                }   
-                catch (ClassNotFoundException ex) {
-                    Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                }                    
             }
+            catch(IOException | ClassNotFoundException e){
+                System.err.println(e.getMessage());
+            }
+        }
     }
 
     public void sendObject(Object gameObject) {
         try {
             outToClient.writeUnshared(gameObject);
         } catch (IOException ex) {
-            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
         }
-    }
-    
+    }    
     
     // 0 closed by myself , 1 closed by other Player
     public synchronized void closeConection(int state) {
@@ -96,7 +87,7 @@ class Connect extends Thread {
             inFromClient.close();
             client.close();
         } catch (IOException ex) {
-            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex.getMessage());
         }
     }
 

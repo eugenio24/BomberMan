@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package bomberman;
 
 /**
@@ -13,9 +9,8 @@ package bomberman;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 //Classe che gestisce la connessione verso il server
 public class MultiplayerConnection {
@@ -41,18 +36,18 @@ public class MultiplayerConnection {
      */
     public boolean startConnection(String IP, int port) { //default localhost 4000
 
-        try {
-            socket = new Socket(IP, port);
+        try {            
+            socket = new Socket(InetAddress.getByName(IP), port);
             outToServer = new ObjectOutputStream(socket.getOutputStream());
             inFromServer = new ObjectInputStream(socket.getInputStream());
             conectionOpened = true;
             
-            Tr = new Thread(new reader(this, mp));//creo e avvio un tread responsabile della lettura
+            Tr = new Thread(new reader(this, mp)); //creo e avvio un tread responsabile della lettura
             Tr.start();
             
             return true;
-//            }
         } catch (IOException ex) {
+            System.err.println(ex.getMessage());
             conectionOpened = false;
             return false;
         }
@@ -71,7 +66,7 @@ public class MultiplayerConnection {
             try {
                 outToServer.writeUnshared(gameObject);
             } catch (IOException ex) {
-                Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                System.err.println(ex.getMessage());
             }
         }
     }
@@ -97,6 +92,7 @@ public class MultiplayerConnection {
                 socket.close();
 
             } catch (IOException ex) {
+                System.err.println(ex.getMessage());
             }
         }
 
@@ -131,10 +127,8 @@ public class MultiplayerConnection {
                                 break;
                         }
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException | ClassNotFoundException ex) {
+                    System.err.println(ex.getMessage());
                 }
 
             }

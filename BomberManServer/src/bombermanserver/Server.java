@@ -1,17 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package bombermanserver;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -19,7 +11,7 @@ import java.util.logging.Logger;
  */
 public class Server extends Thread{
     private final ServerSocket Server;
-    protected Connect player1, player2;
+    private Connect player1, player2;
     
     public Server() throws Exception {
         Server = new ServerSocket(4000);
@@ -44,7 +36,7 @@ public class Server extends Thread{
                 player1.join();
                 player2.join();
             } catch (IOException | InterruptedException ex) {
-
+                System.err.println(ex.getMessage());
             }
         }
     }
