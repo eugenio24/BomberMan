@@ -1,4 +1,3 @@
-
 package bomberman;
 
 import java.util.Timer;

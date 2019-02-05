@@ -27,15 +27,10 @@ public class Game extends JFrame implements Runnable {
     
     private Map map;
     private Player player;
-<<<<<<< HEAD
+
     private final EscMenu escMenu;
     
     private final KeyboardListener keyListener = new KeyboardListener();
-=======
-    private EscMenu escMenu;
-
-    private KeyboardListener keyListener = new KeyboardListener();
->>>>>>> 6d4e4d894b21279462b5482f6377521f47424fd9
     private MouseListener mouseListener;
     
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
@@ -48,12 +43,8 @@ public class Game extends JFrame implements Runnable {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         setMinimumSize(new Dimension(978, 879));
-<<<<<<< HEAD
         setPreferredSize(new Dimension(978, 879));      
-=======
-        setPreferredSize(new Dimension(978, 879));   
-//        setResizable(false);
->>>>>>> 6d4e4d894b21279462b5482f6377521f47424fd9
+
         
         add(canvas);
         setVisible(true);
