@@ -32,17 +32,19 @@ public class Game extends JFrame implements Runnable {
     private Map map;
     private Player player;
     private EscMenu escMenu;
-    
+
     private KeyboardListener keyListener = new KeyboardListener();
     private MouseListener mouseListener;
     
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
+    public GameObject tempObject;
+    public boolean tempObjectToAdd = false;
     
     public Game() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
              
         setMinimumSize(new Dimension(978, 879));
-        setPreferredSize(new Dimension(978, 879));      
+        setPreferredSize(new Dimension(978, 879));   
 //        setResizable(false);
         
         add(canvas);
@@ -63,10 +65,10 @@ public class Game extends JFrame implements Runnable {
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(new SpriteSheet(loadImage("playerSpriteSheet.png")));
+        player = new Player(new SpriteSheet(loadImage("playerSpriteSheet.png")), sheet);
+        
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
-        
         
         gameObjects.add(player);
         gameObjects.add(escMenu);
@@ -82,6 +84,10 @@ public class Game extends JFrame implements Runnable {
      * Metodo per gestire la logica
      */
     public void update() {
+        if(tempObjectToAdd){
+            gameObjects.add(tempObject);
+        }
+        
         gameObjects.forEach((obj) -> {
             obj.update(this);
         });

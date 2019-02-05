@@ -1,21 +1,28 @@
 
 package bomberman;
+
+import java.util.ArrayList;
+
 /**
  *
  * @author Eugenio
  */
 public class Player implements GameObject{
     private Rectangle playerRect;
-    int speed = 3;
-    Direction direction = Direction.DOWN;
-    SpriteSheet sheet;
+    private int speed = 3;
+    private SpriteSheet sheet;
+    private SpriteSheet sheetBomb;
+    private Direction direction = Direction.DOWN;
+    private Bomb bomb;
     
-    public Player(SpriteSheet sheet){
+    public Player(SpriteSheet sheet, SpriteSheet sheetBomb){
         this.playerRect = new Rectangle(0, 0, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
         
         this.sheet = sheet;
         this.sheet.loadSprites(16, 16);
+        this.sheetBomb = sheetBomb;
+        
     }
 
     @Override
@@ -80,6 +87,9 @@ public class Player implements GameObject{
         }
         
         if(keyListener.space()){
+            bomb = new Bomb(sheetBomb, playerRect.getX(), playerRect.getY());
+            game.tempObject = bomb;
+            game.tempObjectToAdd = true;
             
         }
 
