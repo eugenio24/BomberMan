@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package bomberman;
 
-import javax.swing.Timer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -13,51 +10,68 @@ import javax.swing.Timer;
  */
 public class Bomb implements GameObject {
     private Rectangle bombRect;
-    SpriteSheet sheet;
+    private SpriteSheet sheet;
+    private Timer time;
     private int control;
+    private int i;
+    private Sprite sprite;
     
-    public Bomb(SpriteSheet sheet){
-        this.bombRect = new Rectangle(0, 0, 16, 16);
+    public Bomb(SpriteSheet sheet, int x, int y){
+        this.bombRect = new Rectangle(x, y, 16, 16);
         bombRect.generateGraphics(0xFF00FF90); 
         
         this.sheet = sheet;
+        this.sheet.loadSprites(16, 16);
+        gestioneTimer();
     }
 
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom) {
         
-        switch(control){
-            case 1:
-                renderer.renderSprite(sheet.getSprite(4, 2), bombRect.getX(), bombRect.getY(), xZoom, yZoom);
-                break;
-            case 2:
-                renderer.renderSprite(sheet.getSprite(4, 3), bombRect.getX(), bombRect.getY(), xZoom, yZoom);      
-                break;
-            case 3:
-                renderer.renderSprite(sheet.getSprite(4, 4), bombRect.getX(), bombRect.getY(), xZoom, yZoom);     
-                break;
-        }
+            switch(control){
+                case 0:
+                    sprite = sheet.getSprite(4, 2);
+                    break;
+                case 1:
+                    sprite = sheet.getSprite(4, 3);
+                    break;
+                case 2:
+                    sprite = sheet.getSprite(4, 4);
+                    break;
+                default:
+                    sprite = sheet.getSprite(4, 2);
+                    break;
+            }
+        renderer.renderSprite(sprite, bombRect.getX(), bombRect.getY(), xZoom, yZoom);
     }
 
     @Override
-    public void update(Game game) {
-        int[] time = new int[3000];
-        
-        
-        if(control == 1){
-        for(int i=0;i<time.length;i++){
-            if(i == 1000){
-                control = 2;
-            }
-            if(i == 2000){
-                control = 3;
-            }
-        } 
-        }
+    public void update(Game game) {  
     }
 
     public void setControl(int control) {
         this.control = control;
     }
+    
+    public void gestioneTimer(){
+        time = new Timer();
         
+            i = 0;
+            control = 0;
+        
+            time.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    if(i >= 2){
+                        time.cancel();
+                        time.purge();
+                    }else{
+                        i++;
+                        control = i;
+                    }
+                }
+            },1000 ,1000 );
+    }
+    
 }

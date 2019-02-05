@@ -1,17 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package bomberman;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -28,22 +21,22 @@ public class Multiplayer {
     private ArrayList<GameObject> enemyObjects = new ArrayList<>();
     private Player enemyPlayer;
     private Semaphore sMulti = new Semaphore(1);
-    private MultiplayerConnection multiplayerConnection;
+    private final MultiplayerConnection multiplayerConnection;
     private SpriteSheet sheet;
 
-    public Multiplayer(Game game, SpriteSheet sheet, RenderHandler renderer, Player player, ArrayList<GameObject> gameObjects) {
-        this.renderer = renderer;
+    public Multiplayer(Game game) {
         this.game = game;
-        this.sheet = sheet;
-        this.player = player;
-        this.gameObjects = gameObjects;
+        this.renderer = game.getRenderer();
+        this.sheet = game.getSpriteSheet();
+        this.player = game.getPlayer();
+        this.gameObjects = game.getGameObjects();
         
         multiplayerConnection = new MultiplayerConnection(this);
-        enemyPlayer = new Player(new SpriteSheet(game.loadImage("playerSpriteSheet.png")));
+        enemyPlayer = new Player(new SpriteSheet(game.loadImage("playerSpriteSheet.png")), sheet);
     }
     
     public void connectToServer(){
-        multiplayerConnection.startConnection("localhost", 4000);
+        multiplayerConnection.startConnection("127.0.0.1", 4000);
     }
     
     public void connected(){
@@ -91,7 +84,7 @@ public class Multiplayer {
                 enemyPlayer.render(renderer, 3, 3);
                 
                 enemyObjects.forEach((obj) -> {
-                obj.render(renderer, 3, 3);
+                    obj.render(renderer, 3, 3);
                 });
                 
                 sMulti.release();
@@ -99,8 +92,7 @@ public class Multiplayer {
     }
     
     public void send(){
-        if(isMultiplayerConnected){
-            
+        if(isMultiplayerConnected){            
             String playerToSend = "playerPos-" + player.playerRect.getX() + "," + player.playerRect.getY() + "," + String.valueOf(player.direction);
             
             multiplayerConnection.sendObject(playerToSend);

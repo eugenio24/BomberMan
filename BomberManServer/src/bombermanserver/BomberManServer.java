@@ -1,12 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package bombermanserver;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+package bombermanserver;
 
 /**
  *
@@ -14,22 +7,22 @@ import java.util.logging.Logger;
  */
 public class BomberManServer {
     
-    Server s;
+    Server server;
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        
+    public static void main(String[] args) {        
         BomberManServer bmserver = new BomberManServer();
         bmserver.launchServer();
     }
     
     public void launchServer(){
         try {
-            s = new Server();
-            s.start();
+            server = new Server();
+            server.start();
         } catch (Exception ex) {
+            System.err.println(ex.getMessage());
         }
     }
     

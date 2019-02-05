@@ -1,8 +1,6 @@
 
 package bomberman;
 
-import javax.swing.JFrame;
-
 /**
  *
  * @author Eugenio
