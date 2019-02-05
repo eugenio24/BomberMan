@@ -8,14 +8,15 @@ import java.util.ArrayList;
  * @author Eugenio
  */
 public class Player implements GameObject{
-    private Rectangle playerRect;
+    public Rectangle playerRect;
     private int speed = 3;
-    private SpriteSheet sheet;
-    private SpriteSheet sheetBomb;
-    private Direction direction = Direction.DOWN;
+    public SpriteSheet sheet;
+    public SpriteSheet sheetBomb;
+    public Direction direction = Direction.DOWN;
     private Bomb bomb;
     
     public Player(SpriteSheet sheet, SpriteSheet sheetBomb){
+        this.direction = Direction.DOWN;
         this.playerRect = new Rectangle(0, 0, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
         

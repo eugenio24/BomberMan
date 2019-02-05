@@ -1,6 +1,7 @@
 
 package bomberman;
 
+import bomberman.PowerUp.PowerUpType;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
@@ -40,9 +41,11 @@ public class Game extends JFrame implements Runnable {
     public GameObject tempObject;
     public boolean tempObjectToAdd = false;
     
+    private Multiplayer multiplayer;
+    
     public Game() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
-             
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         setMinimumSize(new Dimension(978, 879));
         setPreferredSize(new Dimension(978, 879));   
 //        setResizable(false);
@@ -70,6 +73,10 @@ public class Game extends JFrame implements Runnable {
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
         
+
+        gameObjects.add(p);
+        
+
         gameObjects.add(player);
         gameObjects.add(escMenu);
         
@@ -78,6 +85,7 @@ public class Game extends JFrame implements Runnable {
         canvas.addMouseListener(mouseListener);
         canvas.requestFocus();
         
+        multiplayer = new Multiplayer(this, sheet, renderer, player, gameObjects);
     }
        
     /**
@@ -91,8 +99,11 @@ public class Game extends JFrame implements Runnable {
         gameObjects.forEach((obj) -> {
             obj.update(this);
         });
+        multiplayer.send();
     }
 
+    PowerUp p = new PowerUp(0, 0, new SpriteSheet(loadImage("powerUpsSpriteSheet.png")), PowerUpType.ACCELERATION);
+    
     /**
      * Metodo per visualizzare il gioco
      */
@@ -107,6 +118,8 @@ public class Game extends JFrame implements Runnable {
             obj.render(renderer, 3, 3);
         });                
         
+        multiplayer.render();
+        
         renderer.render(graphics);
 
         graphics.dispose();
@@ -119,17 +132,15 @@ public class Game extends JFrame implements Runnable {
      * @param path Path
      * @return Bufferde Image
      */
-    private BufferedImage loadImage(String path) {
-        try 
-        {
+    public BufferedImage loadImage(String path) {
+        try {
             BufferedImage loadedImage = ImageIO.read(Game.class.getResource(path));
             BufferedImage formattedImage = new BufferedImage(loadedImage.getWidth(), loadedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             formattedImage.getGraphics().drawImage(loadedImage, 0, 0, null);
 
             return formattedImage;
         }
-        catch(IOException ex) 
-        {
+        catch(IOException ex) {
             System.err.println(ex.getMessage());
             return null;
         }
@@ -138,6 +149,8 @@ public class Game extends JFrame implements Runnable {
     @Override
     public void run() {
         BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+        
+        multiplayer.connectToServer();
 
         long lastTime = System.nanoTime();
         double nanoSecondConversion = 1000000000.0 / 60; //60 frames per second
@@ -156,6 +169,7 @@ public class Game extends JFrame implements Runnable {
             render();
             lastTime = now;
         }
+        multiplayer.closeConnection();
         this.dispose();
     }
     
