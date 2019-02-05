@@ -91,7 +91,7 @@ public class Player implements GameObject{
             bomb = new Bomb(sheetBomb, playerRect.getX(), playerRect.getY());
             game.tempObject = bomb;
             game.tempObjectToAdd = true;
-            
+            game.multiSendBomb(bomb);
         }
 
         if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){

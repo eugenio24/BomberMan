@@ -77,5 +77,10 @@ public class Bomb implements GameObject {
                 }
             },1000 ,1000 );
     }
+
+    public Rectangle getBombRect() {
+        return bombRect;
+    }
+    
     
 }

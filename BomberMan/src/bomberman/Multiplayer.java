@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 
 /**
@@ -75,6 +76,10 @@ public class Multiplayer {
                 enemyPlayer.playerRect.setY(Integer.parseInt(data.split(",")[1]));
                 enemyPlayer.direction = Player.Direction.valueOf(data.split(",")[2]);
                 break;
+            case "bomb":
+                Bomb bomb = new Bomb(sheet, Integer.parseInt(data.split(",")[0]),  Integer.parseInt(data.split(",")[1]));
+                game.tempObject = bomb;
+                game.tempObjectToAdd = true;
         }
         
         sMulti.release();
@@ -102,8 +107,14 @@ public class Multiplayer {
         if(isMultiplayerConnected){
             
             String playerToSend = "playerPos-" + player.playerRect.getX() + "," + player.playerRect.getY() + "," + String.valueOf(player.direction);
-            
             multiplayerConnection.sendObject(playerToSend);
+        }
+    }
+    
+    public void sendBomb(Bomb bomb){
+        if(isMultiplayerConnected){
+            String bombToSend = "bomb-" + bomb.getBombRect().getX() + "," + bomb.getBombRect().getY();
+            multiplayerConnection.sendObject(bombToSend);
         }
     }
     

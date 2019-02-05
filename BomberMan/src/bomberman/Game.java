@@ -94,6 +94,7 @@ public class Game extends JFrame implements Runnable {
     public void update() {
         if(tempObjectToAdd){
             gameObjects.add(tempObject);
+            tempObjectToAdd = false;
         }
         
         gameObjects.forEach((obj) -> {
@@ -185,5 +186,9 @@ public class Game extends JFrame implements Runnable {
     
     public void closeGame(){
         thRunning = false;
+    }
+    
+    public void multiSendBomb(Bomb bomb){
+        multiplayer.sendBomb(bomb);
     }
 }
