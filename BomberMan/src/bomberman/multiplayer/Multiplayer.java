@@ -39,7 +39,7 @@ public class Multiplayer {
         this.gameObjects = game.getGameObjects();
         
         multiplayerConnection = new MultiplayerConnection(this);
-        enemyPlayer = new Player(new SpriteSheet(game.loadImage("assets/playerSpriteSheet.png")), sheet);
+        enemyPlayer = new Player(new SpriteSheet(game.loadImage("assets/playerSpriteSheet.png")), sheet, true);
     }
     
     public void connectToServer(){
@@ -76,7 +76,8 @@ public class Multiplayer {
                 enemyPlayer.setDirection(Player.Direction.valueOf(data.split(",")[2]));
                 break;
             case "bomb":
-                game.addBomb(new Bomb(sheet, Integer.parseInt(data.split(",")[0]), Integer.parseInt(data.split(",")[1])), false);
+                game.addEnemyBomb(new Bomb(sheet, Integer.parseInt(data.split(",")[0]), Integer.parseInt(data.split(",")[1])));                
+                break;
         }
         
         sMulti.release();

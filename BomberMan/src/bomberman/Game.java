@@ -45,6 +45,7 @@ public class Game extends JFrame implements Runnable {
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
     private ArrayList<GameObject> objectsToAdd = new ArrayList<>();
     
+    private ArrayList<GameObject> enemyObjects = new ArrayList<>();
     private Multiplayer multiplayer;
     
     public Game() {
@@ -72,7 +73,7 @@ public class Game extends JFrame implements Runnable {
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(new SpriteSheet(loadImage("assets/playerSpriteSheet.png")), sheet);
+        player = new Player(new SpriteSheet(loadImage("assets/playerSpriteSheet.png")), sheet, false);
         
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
@@ -98,6 +99,10 @@ public class Game extends JFrame implements Runnable {
         
         removeExplosedBomb();
         
+        enemyObjects.forEach((obj) -> {            
+            obj.update(this);
+        });
+        
         gameObjects.forEach((obj) -> {            
             obj.update(this);
         });
@@ -113,6 +118,10 @@ public class Game extends JFrame implements Runnable {
         
         //carico lo sfondo
         map.render(renderer);
+        
+        enemyObjects.forEach((obj) -> {            
+            obj.render(renderer, 3, 3);
+        });        
         
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
@@ -150,10 +159,16 @@ public class Game extends JFrame implements Runnable {
         if(!havePowerUp){
             if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
                 this.objectsToAdd.add(bomb);
+                multiSendBomb(bomb);
             }
         }else{            
             this.objectsToAdd.add(bomb);
+            multiSendBomb(bomb);
         }
+    }
+    
+    public void addEnemyBomb(Bomb bomb){
+        this.enemyObjects.add(bomb);
     }
     
     private void removeExplosedBomb(){

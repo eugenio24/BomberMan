@@ -13,13 +13,15 @@ import bomberman.graphics.RenderHandler;
  */
 public class Player implements GameObject{
     private Rectangle playerRect;
-    private int speed = 3;
     private SpriteSheet sheet;
     private SpriteSheet sheetBomb;
-    private Direction direction = Direction.DOWN;
-    private Bomb bomb;
     
-    public Player(SpriteSheet sheet, SpriteSheet sheetBomb){
+    private int speed = 3;
+    private Direction direction = Direction.DOWN;    
+    
+    private boolean isEnemy;
+    
+    public Player(SpriteSheet sheet, SpriteSheet sheetBomb, boolean isEnemy){
         this.direction = Direction.DOWN;
         this.playerRect = new Rectangle(0, 0, 16, 16);
         playerRect.generateGraphics(0xFF00FF90); 
@@ -28,26 +30,29 @@ public class Player implements GameObject{
         this.sheet.loadSprites(16, 16);
         this.sheetBomb = sheetBomb;
         
+        this.isEnemy = isEnemy;
     }
 
     @Override
     public void render(RenderHandler renderer, int xZoom, int yZoom) {    
         Sprite sprite;
+        int y = isEnemy ? 1 : 0;
+        
         switch(direction){
             case UP:
-                sprite = sheet.getSprite(1, 0);
+                sprite = sheet.getSprite(1, y);
                 break;
             case DOWN:
-                sprite = sheet.getSprite(0, 0);
+                sprite = sheet.getSprite(0, y);
                 break;
             case LEFT:
-                sprite = sheet.getSprite(3, 0);
+                sprite = sheet.getSprite(3, y);
                 break;
             case RIGHT:
-                sprite = sheet.getSprite(2, 0);
+                sprite = sheet.getSprite(2, y);
                 break;
             default:
-                sprite = sheet.getSprite(0, 0);
+                sprite = sheet.getSprite(0, y);
                 break;
         }
                
@@ -102,7 +107,6 @@ public class Player implements GameObject{
             int[] bombPos = calculateBombPos();
             
             game.addBomb(new Bomb(sheetBomb, bombPos[0], bombPos[1]), false);
-            game.multiSendBomb(bomb);
         }
 
         if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
