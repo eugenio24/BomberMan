@@ -1,6 +1,8 @@
 
 package bomberman;
 
+import bomberman.graphics.MenuJFrame;
+
 /**
  *
  * @author Eugenio

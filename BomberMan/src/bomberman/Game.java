@@ -1,7 +1,16 @@
 
 package bomberman;
 
-import bomberman.PowerUp.PowerUpType;
+import bomberman.multiplayer.Multiplayer;
+import bomberman.graphics.Map;
+import bomberman.entities.Bomb;
+import bomberman.entities.GameObject;
+import bomberman.entities.Player;
+import bomberman.graphics.SpriteSheet;
+import bomberman.graphics.EscMenu;
+import bomberman.graphics.Tiles;
+import bomberman.graphics.RenderHandler;
+import bomberman.entities.PowerUp.PowerUpType;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -34,8 +43,7 @@ public class Game extends JFrame implements Runnable {
     private MouseListener mouseListener;
     
     private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    public GameObject tempObject;
-    public boolean tempObjectToAdd = false;
+    private ArrayList<GameObject> objectsToAdd = new ArrayList<>();
     
     private Multiplayer multiplayer;
     
@@ -57,20 +65,17 @@ public class Game extends JFrame implements Runnable {
         
         renderer = new RenderHandler(getContentPane().getWidth(), getContentPane().getHeight());
         
-        sheet = new SpriteSheet(loadImage("SpritesGame.png"));
+        sheet = new SpriteSheet(loadImage("assets/SpritesGame.png"));
         sheet.loadSprites(16, 16);
         
-        tiles = new Tiles(new File("src/bomberman/testTiles.txt"), sheet);
+        tiles = new Tiles(new File("src/bomberman/assets/testTiles.txt"), sheet);
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(new SpriteSheet(loadImage("playerSpriteSheet.png")), sheet);
+        player = new Player(new SpriteSheet(loadImage("assets/playerSpriteSheet.png")), sheet);
         
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
-        
-
-        gameObjects.add(p);
         
 
         gameObjects.add(player);
@@ -88,18 +93,16 @@ public class Game extends JFrame implements Runnable {
      * Metodo per gestire la logica
      */
     public void update() {
-        if(tempObjectToAdd){
-            gameObjects.add(tempObject);
-            tempObjectToAdd = false;
-        }
+        gameObjects.addAll(objectsToAdd);
+        objectsToAdd.clear();
         
-        gameObjects.forEach((obj) -> {
+        removeExplosedBomb();
+        
+        gameObjects.forEach((obj) -> {            
             obj.update(this);
         });
         multiplayer.send();
     }
-
-    PowerUp p = new PowerUp(0, 0, new SpriteSheet(loadImage("powerUpsSpriteSheet.png")), PowerUpType.ACCELERATION);
     
     /**
      * Metodo per visualizzare il gioco
@@ -141,6 +144,29 @@ public class Game extends JFrame implements Runnable {
             System.err.println(ex.getMessage());
             return null;
         }
+    }
+    
+    public void addBomb(Bomb bomb, boolean havePowerUp){
+        if(!havePowerUp){
+            if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
+                this.objectsToAdd.add(bomb);
+            }
+        }else{            
+            this.objectsToAdd.add(bomb);
+        }
+    }
+    
+    private void removeExplosedBomb(){
+        ArrayList<Bomb> toRemove = new ArrayList<>();
+        
+        gameObjects.forEach(obj -> {
+            if(obj instanceof Bomb){
+                if(((Bomb) obj).isEsplosed())
+                    toRemove.add((Bomb)obj);
+            }
+        });
+        
+        gameObjects.removeAll(toRemove);
     }
 
     @Override

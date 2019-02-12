@@ -5,6 +5,7 @@
  */
 package bomberman;
 
+import bomberman.graphics.EscMenu;
 import java.awt.event.MouseEvent;
 
 /**
