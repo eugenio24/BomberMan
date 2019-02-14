@@ -76,7 +76,7 @@ public class Multiplayer {
                 enemyPlayer.setDirection(Player.Direction.valueOf(data.split(",")[2]));
                 break;
             case "bomb":
-                game.addEnemyBomb(new Bomb(sheet, Integer.parseInt(data.split(",")[0]), Integer.parseInt(data.split(",")[1])));                
+                game.addEnemyBomb(new Bomb(sheet, Integer.parseInt(data.split(",")[0]), Integer.parseInt(data.split(",")[1])), Boolean.parseBoolean(data.split(",")[2]));                
                 break;
         }
         
@@ -108,9 +108,9 @@ public class Multiplayer {
         }
     }
     
-    public void sendBomb(Bomb bomb){
+    public void sendBomb(Bomb bomb, Boolean hasPowerUp){
         if(isMultiplayerConnected){
-            String bombToSend = "bomb-" + bomb.getBombRect().getX() + "," + bomb.getBombRect().getY();
+            String bombToSend = "bomb-" + bomb.getBombRect().getX() + "," + bomb.getBombRect().getY() + "," + hasPowerUp.toString();
             multiplayerConnection.sendObject(bombToSend);
         }
     }

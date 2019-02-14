@@ -159,16 +159,22 @@ public class Game extends JFrame implements Runnable {
         if(!havePowerUp){
             if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
                 this.objectsToAdd.add(bomb);
-                multiSendBomb(bomb);
+                multiplayer.sendBomb(bomb, false);
             }
         }else{            
             this.objectsToAdd.add(bomb);
-            multiSendBomb(bomb);
+            multiplayer.sendBomb(bomb, true);
         }
     }
     
-    public void addEnemyBomb(Bomb bomb){
-        this.enemyObjects.add(bomb);
+    public void addEnemyBomb(Bomb bomb, boolean havePowerUp){
+        if(!havePowerUp){
+            if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
+                this.objectsToAdd.add(bomb); 
+            }
+        }else{            
+            this.objectsToAdd.add(bomb);
+        }
     }
     
     private void removeExplosedBomb(){
@@ -225,9 +231,6 @@ public class Game extends JFrame implements Runnable {
         thRunning = false;
     }
     
-    public void multiSendBomb(Bomb bomb){
-        multiplayer.sendBomb(bomb);
-    }
     
     public RenderHandler getRenderer(){
         return this.renderer;
