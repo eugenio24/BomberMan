@@ -21,12 +21,28 @@ public class Bomb implements GameObject {
     
     private boolean isExplosed = false;
     
+    /**
+     * Constructor
+     * @param sheet SpriteSheet
+     * @param x int x
+     * @param y int y
+     */
     public Bomb(SpriteSheet sheet, int x, int y){
         this.bombRect = new Rectangle(x, y, 16, 16);
         bombRect.generateGraphics(0xFF00FF90); 
         
         this.sheet = sheet;
         this.sheet.loadSprites(16, 16);
+        gestioneTimer();
+    }
+    
+    public Bomb(Bomb bomb){
+        this.bombRect = new Rectangle(bomb.bombRect);
+        bombRect.generateGraphics(0xFF00FF90);
+                       
+        this.sheet = bomb.sheet;
+        this.sheet.loadSprites(16, 16);
+        
         gestioneTimer();
     }
 

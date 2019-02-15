@@ -5,33 +5,34 @@ package bombermanserver;
  *
  * @author matteo.devigili
  */
+import bombermanserver.messages.Message;
+import bombermanserver.messages.MessageType;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //Classe che gestisce la singola connessione verso un client del gioco
 class Connect extends Thread {
 
-    Connect player2;
+    private Connect player2;
     private Socket client = null;
     private ObjectOutputStream outToClient;
     private ObjectInputStream inFromClient;
-    private String host;
-    private Server s;
 
-    public Connect(Socket clienSocket, Server s) {
-        this.s = s;
+    public Connect(Socket clienSocket) {
         client = clienSocket;
         try {
             outToClient = new ObjectOutputStream(client.getOutputStream());
             inFromClient = new ObjectInputStream(client.getInputStream());
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
             try {
                 client.close();
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, e);
             }
         }
     }
@@ -39,10 +40,10 @@ class Connect extends Thread {
     public void addPlayer2(Connect player2){
         this.player2 = player2;
         try {
-            outToClient.writeUnshared("connected");
+            outToClient.writeUnshared(new Message(MessageType.CLIENT_CONNECTED));
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        }
+            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
 
     @Override
@@ -51,11 +52,11 @@ class Connect extends Thread {
             try {
                 Object obj = inFromClient.readUnshared();
 
-                if (obj instanceof String) {
-                    switch ((String) obj) {
-                        case "close": //Se arriva un messaggio di chiusura connessione
-                            closeConection(0);
-                            break;
+                if (obj instanceof Message) {
+                    switch (((Message) obj).getMessageType()) {
+//                        case "close": //Se arriva un messaggio di chiusura connessione
+//                            closeConection(0);
+//                            break;
                         default:
                             player2.sendObject(obj);
                             break;
@@ -63,16 +64,16 @@ class Connect extends Thread {
                 }                    
             }
             catch(IOException | ClassNotFoundException e){
-                System.err.println(e.getMessage());
+                Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, e);
             }
         }
     }
 
-    public void sendObject(Object gameObject) {
+    public void sendObject(Object msg) {
         try {
-            outToClient.writeUnshared(gameObject);
+            outToClient.writeUnshared(msg);
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
         }
     }    
     
@@ -87,7 +88,7 @@ class Connect extends Thread {
             inFromClient.close();
             client.close();
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
+            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

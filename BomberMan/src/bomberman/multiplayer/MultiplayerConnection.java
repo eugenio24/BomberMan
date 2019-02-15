@@ -1,137 +1,215 @@
 
 package bomberman.multiplayer;
 
-/**
- *
- * @author matteo.devigili
- */
-
+import bomberman.Game;
+import bomberman.entities.Bomb;
+import bomberman.entities.Player;
+import bomberman.graphics.SpriteSheet;
+import bombermanserver.messages.BombMessage;
+import bombermanserver.messages.Message;
+import bombermanserver.messages.PlayerMessage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-//Classe che gestisce la connessione verso il server
-public class MultiplayerConnection {
-
-    private final Multiplayer mp;
-    private ObjectOutputStream outToServer;
-    private ObjectInputStream inFromServer;
-    private Socket socket;
-    private Thread Tr;
-
-    private boolean conectionOpened;
-
-    public MultiplayerConnection(Multiplayer mp) {
-        this.mp = mp;
-        conectionOpened = false;
-    }
-
+/**
+ *
+ * @author Eugenio
+ */
+public class MultiplayerConnection extends Thread{
+    private Socket serverSocket;
+    private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
+    
+    private final SpriteSheet bombSpriteSheet;
+    
+    private final Player player;
+    private Semaphore playerSemaphore = new Semaphore(1);
+    
+    private ArrayList<Bomb> bombs = new ArrayList<>();
+    private Semaphore bombsSemaphore = new Semaphore(1);
+   
+    private boolean online = false;
+    private boolean ready = false;
+    private Semaphore readySemaphore = new Semaphore(1);
+    
     /**
-     *
-     * @param IP
-     * @param port
-     * @return true if the connection has been established
+     * Constructor
+     * @param IP String server IP
+     * @param port int server port
+     * @param playerSheet SpriteSheet player
+     * @param bombSheet SpriteSheet bomb
      */
-    public boolean startConnection(String IP, int port) { //default localhost 4000
-
-        try {            
-            socket = new Socket(InetAddress.getByName(IP), port);
-            outToServer = new ObjectOutputStream(socket.getOutputStream());
-            inFromServer = new ObjectInputStream(socket.getInputStream());
-            conectionOpened = true;
-            
-            Tr = new Thread(new reader(this, mp)); //creo e avvio un tread responsabile della lettura
-            Tr.start();
-            
-            return true;
+    public MultiplayerConnection(String IP, int port, SpriteSheet playerSheet, SpriteSheet bombSheet){
+        this.online = true;
+        
+        try {
+            this.serverSocket = new Socket(InetAddress.getByName(IP), port);
+            this.outputStream = new ObjectOutputStream(serverSocket.getOutputStream());
+            this.inputStream = new ObjectInputStream(serverSocket.getInputStream());
+        } catch (UnknownHostException ex) {
+            this.online = false;
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            conectionOpened = false;
-            return false;
+            this.online = false;
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private boolean isConectionOpened() {
-        return conectionOpened;
-    }
-
-    /**
-     *
-     * @param gameObject to send to the server
-     */
-    public void sendObject(Object gameObject) {
-        if (conectionOpened) {
-            try {
-                outToServer.writeUnshared(gameObject);
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-            }
+        
+        this.player = new Player(playerSheet, bombSheet, true);    
+        this.bombSpriteSheet = bombSheet;
+                     
+        if(online){            
+            this.start();
         }
-    }
-
-    /**
-     *
-     * @param state 0 Closing request from client | 1 Closing request from server | -1 closing for
-     * error
-     *
-     */
-    public void closeConection(int state) {
-        if (conectionOpened) {
-            try {
-                conectionOpened = false;
-                if (state == 0) {
-                    outToServer.writeUnshared("close"); //Mando il messaggio per chiudere la parte server
-                } else {
-                    mp.closeGame();
-                }
-                Tr.stop();//fermo il thread che legge i messaggi (soluzione non elegante) (Dovrebbe fermarsi da solo)
-                outToServer.close();//chiudo il resto
-                inFromServer.close();
-                socket.close();
-
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-            }
-        }
-
     }
     
-    public class reader implements Runnable { //Thread responsabile della lettura dei messaggi inviati dal server
-
-        MultiplayerConnection mc;
-        Multiplayer mp;
-
-        public reader(MultiplayerConnection mc, Multiplayer mp) {
-            this.mc = mc;
-            this.mp = mp;
+    /**
+     * Metodo per controllare se la connessione è andata a buon fine
+     * @return true se connesso
+     */
+    public boolean isConnected(){
+        return this.online;
+    }
+    
+    /**
+     * Metodo per controllare se c'è l'avversario
+     * @return true se è pronto
+     */
+    public boolean isReady(){
+        boolean temp = false;
+        
+        try {            
+            readySemaphore.acquire();
+            temp = this.ready;
+            readySemaphore.release();            
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        @Override
-        public void run() {
-            while (mc.isConectionOpened()) {
-                try {
-                    Object obj = mc.inFromServer.readUnshared();
-                    if (obj.getClass() == String.class) {
-                        switch ((String) obj) {
-                            case "close": //Se arriva un messaggio di chiusura connessione
-                                mc.closeConection(1);
-                                mp.disconnected();  //Informo il gioco
-                                break;
-                            case "connected":   //Se arriva un messaggio di connessione avvenuta
-                                mp.connected();   //Informo il gioco
-                                break;
-                            default:
-                                mp.receive((String) obj);
-                                break;
-                        }
-                    }
-                } catch (IOException | ClassNotFoundException ex) {
-                    System.err.println(ex.getMessage());
+        
+        return temp;
+    }
+    
+    /**
+     * Metodo per mandare un messaggio al server
+     * @param msg Message messaggio da mandare
+     */
+    public void sendMessage(Message msg){
+        try {
+            this.outputStream.writeUnshared(msg);
+        } catch (IOException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Player Getter
+     * @return A New Player Enemy Updated
+     */
+    private Player getPlayer(){
+        Player p = null;
+        try {
+            playerSemaphore.acquire();
+            p = new Player(this.player);
+            playerSemaphore.release();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return p;
+    }
+    
+    /**
+     * Bombs Getter
+     * @return ArrayList of Bomb
+     */
+    public ArrayList<Bomb> getAndRemoveBombs(){
+        ArrayList<Bomb> temp = new ArrayList<>();
+        try {
+            bombsSemaphore.acquire();
+            bombs.forEach((elem)->{
+                temp.add(new Bomb(elem));
+            });
+            bombs.clear();
+            bombsSemaphore.release();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
+    }
+    
+    /**
+     * Metodo per modificare i dati del Player
+     * @param msg PlayerMessage
+     */
+    private void updatePlayer(PlayerMessage msg){
+        try {
+            this.playerSemaphore.acquire();
+            this.player.setX(msg.getX());
+            this.player.setY(msg.getY());
+            this.player.setDirection(msg.getDirection());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.playerSemaphore.release();
+    }
+    
+    /**
+     * Metodo per aggiungere una bomba
+     * @param msg BombMessage
+     */
+    private void updateBomb(BombMessage msg){
+        try {
+            this.bombsSemaphore.acquire();
+            this.bombs.add(new Bomb(this.bombSpriteSheet, msg.getX(), msg.getY()));
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.bombsSemaphore.release();
+    }
+    
+    /**
+     * Metodo che aggiorna il gioco con le modifice dell'altro giocatore
+     * @param game Game
+     */
+    public void update(Game game){
+        game.updateEnemy(this.getPlayer());
+        game.addEnemyBombs(this.getAndRemoveBombs());
+    }
+    
+    @Override
+    public void run(){
+        while(true){
+            try {
+                Object msg = inputStream.readUnshared();
+                
+                if(msg instanceof PlayerMessage){
+                    updatePlayer((PlayerMessage)msg);
                 }
-
-            }
+                
+                if(msg instanceof BombMessage){
+                    updateBomb((BombMessage)msg);
+                }
+                
+                if(msg instanceof Message){
+                    switch(((Message) msg).getMessageType()){
+                        case CLIENT_CONNECTED:
+                            readySemaphore.acquire();
+                            ready = true;
+                            readySemaphore.release();
+                            break;
+                        default: break;
+                    }
+                }
+                
+            } catch (IOException | ClassNotFoundException | InterruptedException ex) {
+                Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }          
         }
     }
 }

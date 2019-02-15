@@ -4,6 +4,8 @@ package bombermanserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -27,16 +29,19 @@ public class Server extends Thread{
                 System.out.println(client1.getInetAddress() + " is trying to connect");
                 Socket client2 = Server.accept();
                 System.out.println(client2.getInetAddress() + " is trying to connect");
-                player1 = new Connect(client1, this);
-                player2 = new Connect(client2, this);
+                
+                player1 = new Connect(client1);
+                player2 = new Connect(client2);
+                
                 player1.addPlayer2(player2);
                 player2.addPlayer2(player1);
+                
                 player1.start();
                 player2.start();
                 player1.join();
                 player2.join();
             } catch (IOException | InterruptedException ex) {
-                System.err.println(ex.getMessage());
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

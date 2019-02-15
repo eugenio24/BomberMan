@@ -3,13 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/studente/Documents/GitHub/BomberMan/BomberMan/src/bomberman/multiplayer/MultiplayerConnection.java</file>
-            <file>file:/C:/Users/studente/Documents/GitHub/BomberMan/BomberMan/src/bomberman/BomberMan.java</file>
-            <file>file:/C:/Users/studente/Documents/GitHub/BomberMan/BomberMan/src/bomberman/Game.java</file>
-            <file>file:/C:/Users/studente/Documents/GitHub/BomberMan/BomberMan/src/bomberman/entities/Player.java</file>
-            <file>file:/C:/Users/studente/Documents/GitHub/BomberMan/BomberMan/src/bomberman/multiplayer/Multiplayer.java</file>
-            <file>file:/C:/Users/studente/Documents/GitHub/BomberMan/BomberMan/src/bomberman/graphics/EscMenu.java</file>
-            <file>file:/C:/Users/studente/Documents/GitHub/BomberMan/BomberMan/src/bomberman/entities/Bomb.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/BomberMan/BomberMan/src/bomberman/Game.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/BomberMan/BomberMan/src/bomberman/entities/Player.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/BomberMan/BomberMan/src/bomberman/multiplayer/MultiplayerConnection.java</file>
         </group>
     </open-files>
 </project-private>

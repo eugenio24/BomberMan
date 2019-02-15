@@ -12,15 +12,37 @@ public class Rectangle {
     private int h;
     private int[] pixels;
 
-    Rectangle(int x, int y, int w, int h) {
+    /**
+     * Constructor
+     * @param x int x
+     * @param y int y
+     * @param w int width
+     * @param h int height
+     */
+    public Rectangle(int x, int y, int w, int h) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
     }
 
-    Rectangle() {
+    /**
+     * Constructor
+     */
+    public Rectangle() {
         this(0,0,0,0);
+    }
+    
+    /**
+     * Constructor
+     * @param rect Rectangle 
+     */
+    public Rectangle(Rectangle rect){
+        this.pixels = rect.pixels;
+        this.h = rect.h;
+        this.w = rect.w;
+        this.x = rect.x;
+        this.y = rect.y;
     }
 
     public void generateGraphics(int color) {

@@ -21,16 +21,34 @@ public class Player implements GameObject{
     
     private boolean isEnemy;
     
+    /**
+     * Constructor 
+     * @param sheet SpriteSheet player 
+     * @param sheetBomb SpriteSheet bomb
+     * @param isEnemy Boolean true if enemy
+     */
     public Player(SpriteSheet sheet, SpriteSheet sheetBomb, boolean isEnemy){
         this.direction = Direction.DOWN;
-        this.playerRect = new Rectangle(0, 0, 16, 16);
-        playerRect.generateGraphics(0xFF00FF90); 
+        this.playerRect = new Rectangle(0, 0, 16, 16);        
         
         this.sheet = sheet;
         this.sheet.loadSprites(16, 16);
         this.sheetBomb = sheetBomb;
         
         this.isEnemy = isEnemy;
+    }
+    
+    /**
+     * Constructor
+     * @param player Player
+     */
+    public Player(Player player){
+        this.direction = player.direction;
+        this.isEnemy = player.isEnemy;
+        this.playerRect = new Rectangle(player.playerRect);        
+        this.sheet = player.sheet;        
+        this.sheetBomb = player.sheetBomb;
+        this.speed = player.speed;
     }
 
     @Override
@@ -59,6 +77,10 @@ public class Player implements GameObject{
         renderer.renderSprite(sprite, playerRect.getX(), playerRect.getY(), xZoom, yZoom);
     }
     
+    /**
+     * Metodo che calcola la posizione delle bombe in base alla posizione del player
+     * @return Array -> Array[0] x, Array[1] y
+     */
     public int[] calculateBombPos(){
         int x = (int)Math.round((playerRect.getX()/64.0)-0.25)*64;
         int y = (int)Math.round((playerRect.getY()/64.0)-0.25)*64;
@@ -120,8 +142,27 @@ public class Player implements GameObject{
         }
     }
     
+    
+    // GETTER - SETTER
+    
     public Rectangle getPlayerRect(){
         return this.playerRect;
+    }
+    
+    public void setX(int value){
+        this.playerRect.setX(value);
+    }
+    
+    public int getX(){
+        return this.playerRect.getX();
+    }
+    
+    public void setY(int value){
+        this.playerRect.setY(value);
+    }
+    
+    public int getY(){
+        return this.playerRect.getY();
     }
     
     public Direction getDirection(){
@@ -130,9 +171,5 @@ public class Player implements GameObject{
     
     public void setDirection(Direction value){
         this.direction = value;
-    }
-    
-    public enum Direction{
-        UP, DOWN, LEFT, RIGHT
-    }
+    }   
 }

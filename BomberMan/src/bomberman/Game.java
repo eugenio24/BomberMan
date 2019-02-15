@@ -1,16 +1,18 @@
 
 package bomberman;
 
-import bomberman.multiplayer.Multiplayer;
 import bomberman.graphics.Map;
 import bomberman.entities.Bomb;
+import bomberman.entities.Direction;
 import bomberman.entities.GameObject;
 import bomberman.entities.Player;
 import bomberman.graphics.SpriteSheet;
 import bomberman.graphics.EscMenu;
 import bomberman.graphics.Tiles;
 import bomberman.graphics.RenderHandler;
-import bomberman.entities.PowerUp.PowerUpType;
+import bomberman.multiplayer.MultiplayerConnection;
+import bombermanserver.messages.BombMessage;
+import bombermanserver.messages.PlayerMessage;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -31,38 +33,37 @@ public class Game extends JFrame implements Runnable {
     private final Canvas canvas = new Canvas();
     private final RenderHandler renderer;
 
-    private SpriteSheet sheet;
-    private Tiles tiles;
-    
-    private Map map;
-    private Player player;
-
+    private final SpriteSheet sheet;
+    private final Tiles tiles;
     private final EscMenu escMenu;
     
     private final KeyboardListener keyListener = new KeyboardListener();
     private MouseListener mouseListener;
     
-    private ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private ArrayList<GameObject> objectsToAdd = new ArrayList<>();
+    private final Map map;
+    private final Player player;
+    private Player enemy;
     
-    private ArrayList<GameObject> enemyObjects = new ArrayList<>();
-    private Multiplayer multiplayer;
+    private boolean isMultiplayer = false;
+    private MultiplayerConnection multiplayerHandler = null;
+    
+    private final ArrayList<GameObject> gameObjects = new ArrayList<>();
+    private final ArrayList<GameObject> objectsToAdd = new ArrayList<>();
+    
+    private final ArrayList<GameObject> enemyObjects = new ArrayList<>();
     
     public Game() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         setMinimumSize(new Dimension(978, 879));
         setPreferredSize(new Dimension(978, 879));      
-
         
         add(canvas);
         setVisible(true);
         canvas.createBufferStrategy(3);
                        
-        pack();
-        
-        setLocationRelativeTo(null);
-        
+        pack();        
+        setLocationRelativeTo(null);        
         
         renderer = new RenderHandler(getContentPane().getWidth(), getContentPane().getHeight());
         
@@ -86,14 +87,20 @@ public class Game extends JFrame implements Runnable {
         canvas.addKeyListener(keyListener);
         canvas.addMouseListener(mouseListener);
         canvas.requestFocus();
-        
-        multiplayer = new Multiplayer(this);
+     
+        this.multiplayerHandler = new MultiplayerConnection("127.0.0.1", 4000, new SpriteSheet(loadImage("assets/playerSpriteSheet.png")), sheet);
+        this.isMultiplayer = this.multiplayerHandler.isConnected();    
+        this.multiplayerHandler.update(this);
     }
        
     /**
      * Metodo per gestire la logica
      */
     public void update() {
+        if(isMultiplayer){
+            this.multiplayerHandler.update(this);            
+        }
+        
         gameObjects.addAll(objectsToAdd);
         objectsToAdd.clear();
         
@@ -106,7 +113,8 @@ public class Game extends JFrame implements Runnable {
         gameObjects.forEach((obj) -> {            
             obj.update(this);
         });
-        multiplayer.send();
+        
+        multiplayerHandler.sendMessage(new PlayerMessage(player.getX(), player.getY(), player.getDirection()));
     }
     
     /**
@@ -119,6 +127,10 @@ public class Game extends JFrame implements Runnable {
         //carico lo sfondo
         map.render(renderer);
         
+        if(isMultiplayer){
+            enemy.render(renderer, 3, 3);
+        }
+        
         enemyObjects.forEach((obj) -> {            
             obj.render(renderer, 3, 3);
         });        
@@ -126,9 +138,7 @@ public class Game extends JFrame implements Runnable {
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 3, 3);
         });                
-        
-        multiplayer.render();
-        
+                
         renderer.render(graphics);
 
         graphics.dispose();
@@ -141,7 +151,7 @@ public class Game extends JFrame implements Runnable {
      * @param path Path
      * @return Bufferde Image
      */
-    public BufferedImage loadImage(String path) {
+    private BufferedImage loadImage(String path) {
         try {
             BufferedImage loadedImage = ImageIO.read(Game.class.getResource(path));
             BufferedImage formattedImage = new BufferedImage(loadedImage.getWidth(), loadedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -155,26 +165,32 @@ public class Game extends JFrame implements Runnable {
         }
     }
     
+    /**
+     * Metodo che fa l'update dell'avversario
+     * @param en Player nemico aggiornato
+     */
+    public void updateEnemy(Player en){
+        this.enemy = en;
+    }
+    
     public void addBomb(Bomb bomb, boolean havePowerUp){
         if(!havePowerUp){
             if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
                 this.objectsToAdd.add(bomb);
-                multiplayer.sendBomb(bomb, false);
+                this.multiplayerHandler.sendMessage(new BombMessage(bomb.getBombRect().getX(), bomb.getBombRect().getY()));
             }
         }else{            
             this.objectsToAdd.add(bomb);
-            multiplayer.sendBomb(bomb, true);
+            this.multiplayerHandler.sendMessage(new BombMessage(bomb.getBombRect().getX(), bomb.getBombRect().getY()));
         }
-    }
+    }   
     
-    public void addEnemyBomb(Bomb bomb, boolean havePowerUp){
-        if(!havePowerUp){
-            if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
-                this.objectsToAdd.add(bomb); 
-            }
-        }else{            
-            this.objectsToAdd.add(bomb);
-        }
+    /**
+     * Metodo per aggiungere le bombe del nemico
+     * @param bombs ArrayList of Bombs
+     */
+    public void addEnemyBombs(ArrayList<Bomb> bombs){
+        this.enemyObjects.addAll(bombs);
     }
     
     private void removeExplosedBomb(){
@@ -188,14 +204,31 @@ public class Game extends JFrame implements Runnable {
         });
         
         gameObjects.removeAll(toRemove);
+        
+        toRemove.clear();
+        enemyObjects.forEach(obj -> {
+            if(obj instanceof Bomb){
+                if(((Bomb) obj).isEsplosed())
+                    toRemove.add((Bomb)obj);
+            }
+        });
+        
+        enemyObjects.removeAll(toRemove);
     }
 
     @Override
     public void run() {
         BufferStrategy bufferStrategy = canvas.getBufferStrategy();
         
-        multiplayer.connectToServer();
-
+        if(isMultiplayer){
+            System.out.println("multiplayer");
+            while(!multiplayerHandler.isReady()){
+                //System.out.println("waiting opponent");
+            }
+        }else{
+            System.out.println("singleplayer");
+        }
+        
         long lastTime = System.nanoTime();
         double nanoSecondConversion = 1000000000.0 / 60; //60 frames per second
         double changeInSeconds = 0;
@@ -213,7 +246,6 @@ public class Game extends JFrame implements Runnable {
             render();
             lastTime = now;
         }
-        multiplayer.closeConnection();
         this.dispose();
     }
     
