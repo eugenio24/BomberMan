@@ -26,7 +26,7 @@ public class EscMenu implements GameObject{
         game = gm;
         try {
             //Carica l'immagine del menù esc
-            BufferedImage bufImg = ImageIO.read(getClass().getClassLoader().getResource("bomberman/assets/escMenu.jpg"));
+            BufferedImage bufImg = ImageIO.read(getClass().getResource("/bomberman/assets/escMenu.jpg"));
             convertedImg = new BufferedImage(bufImg.getWidth(), bufImg.getHeight(), BufferedImage.TYPE_INT_RGB);
             convertedImg.getGraphics().drawImage(bufImg, 0, 0, null);
         } catch (IOException ex) {

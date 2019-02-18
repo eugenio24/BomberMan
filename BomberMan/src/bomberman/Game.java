@@ -3,7 +3,6 @@ package bomberman;
 
 import bomberman.graphics.Map;
 import bomberman.entities.Bomb;
-import bomberman.entities.Direction;
 import bomberman.entities.GameObject;
 import bomberman.entities.Player;
 import bomberman.graphics.SpriteSheet;
@@ -18,11 +17,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -66,15 +65,15 @@ public class Game extends JFrame implements Runnable {
         setLocationRelativeTo(null);        
         
         renderer = new RenderHandler(getContentPane().getWidth(), getContentPane().getHeight());
+        sheet = new SpriteSheet(loadImage("/bomberman/assets/SpritesGame.png"));
         
-        sheet = new SpriteSheet(loadImage("assets/SpritesGame.png"));
         sheet.loadSprites(16, 16);
         
-        tiles = new Tiles(new File("src/bomberman/assets/testTiles.txt"), sheet);
+        tiles = new Tiles("/bomberman/assets/testTiles.txt", sheet);
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(new SpriteSheet(loadImage("assets/playerSpriteSheet.png")), sheet, false);
+        player = new Player(new SpriteSheet(loadImage("/bomberman/assets/playerSpriteSheet.png")), sheet, false);
         
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
@@ -88,7 +87,7 @@ public class Game extends JFrame implements Runnable {
         canvas.addMouseListener(mouseListener);
         canvas.requestFocus();
      
-        this.multiplayerHandler = new MultiplayerConnection("127.0.0.1", 4000, new SpriteSheet(loadImage("assets/playerSpriteSheet.png")), sheet);
+        this.multiplayerHandler = new MultiplayerConnection("127.0.0.1", 4000, new SpriteSheet(loadImage("/bomberman/assets/playerSpriteSheet.png")), sheet);
         this.isMultiplayer = this.multiplayerHandler.isConnected();    
         this.multiplayerHandler.update(this);
     }
@@ -98,7 +97,8 @@ public class Game extends JFrame implements Runnable {
      */
     public void update() {
         if(isMultiplayer){
-            this.multiplayerHandler.update(this);            
+            this.multiplayerHandler.update(this);          
+            multiplayerHandler.sendMessage(new PlayerMessage(player.getX(), player.getY(), player.getDirection()));
         }
         
         gameObjects.addAll(objectsToAdd);
@@ -112,9 +112,7 @@ public class Game extends JFrame implements Runnable {
         
         gameObjects.forEach((obj) -> {            
             obj.update(this);
-        });
-        
-        multiplayerHandler.sendMessage(new PlayerMessage(player.getX(), player.getY(), player.getDirection()));
+        });                
     }
     
     /**
@@ -123,7 +121,7 @@ public class Game extends JFrame implements Runnable {
     public void render() {
         BufferStrategy bufferStrategy = canvas.getBufferStrategy();
         Graphics graphics = bufferStrategy.getDrawGraphics();    
-        
+               
         //carico lo sfondo
         map.render(renderer);
         
@@ -153,7 +151,7 @@ public class Game extends JFrame implements Runnable {
      */
     private BufferedImage loadImage(String path) {
         try {
-            BufferedImage loadedImage = ImageIO.read(Game.class.getResource(path));
+            BufferedImage loadedImage = ImageIO.read(getClass().getResource(path));                        
             BufferedImage formattedImage = new BufferedImage(loadedImage.getWidth(), loadedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             formattedImage.getGraphics().drawImage(loadedImage, 0, 0, null);
 
@@ -177,11 +175,13 @@ public class Game extends JFrame implements Runnable {
         if(!havePowerUp){
             if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
                 this.objectsToAdd.add(bomb);
-                this.multiplayerHandler.sendMessage(new BombMessage(bomb.getBombRect().getX(), bomb.getBombRect().getY()));
+                if(isMultiplayer)
+                    this.multiplayerHandler.sendMessage(new BombMessage(bomb.getBombRect().getX(), bomb.getBombRect().getY()));
             }
         }else{            
             this.objectsToAdd.add(bomb);
-            this.multiplayerHandler.sendMessage(new BombMessage(bomb.getBombRect().getX(), bomb.getBombRect().getY()));
+            if(isMultiplayer)
+                this.multiplayerHandler.sendMessage(new BombMessage(bomb.getBombRect().getX(), bomb.getBombRect().getY()));
         }
     }   
     

@@ -1,8 +1,6 @@
 
 package bomberman.graphics;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -14,23 +12,20 @@ public class Tiles {
     private SpriteSheet spriteSheet;
     private ArrayList<Tile> tileList = new ArrayList<Tile>();
     
-    public Tiles(File tilesFile, SpriteSheet spriteSheet){
-        this.spriteSheet = spriteSheet;
-        try {
-            Scanner scanner = new Scanner(tilesFile);
+    public Tiles(String tilesPath, SpriteSheet spriteSheet){
+        this.spriteSheet = spriteSheet;    
+        
+        Scanner scanner = new Scanner(getClass().getResourceAsStream(tilesPath));
+
+        while(scanner.hasNextLine()){
+            String line = scanner.nextLine();
+
+            String[] splittedLine = line.split("-");
+            String tileName = splittedLine[0];
+            int spriteX = Integer.parseInt(splittedLine[1]);
+            int spriteY = Integer.parseInt(splittedLine[2]);                
             
-            while(scanner.hasNextLine()){
-                String line = scanner.nextLine();
-                
-                String[] splittedLine = line.split("-");
-                String tileName = splittedLine[0];
-                int spriteX = Integer.parseInt(splittedLine[1]);
-                int spriteY = Integer.parseInt(splittedLine[2]);                
-                
-                tileList.add(new Tile(tileName, spriteSheet.getSprite(spriteX, spriteY)));
-            }
-        } catch (FileNotFoundException ex) {
-            System.err.println(ex.getMessage());
+            tileList.add(new Tile(tileName, spriteSheet.getSprite(spriteX, spriteY)));
         }
     }
     

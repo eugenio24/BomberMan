@@ -1,12 +1,11 @@
 
 package bomberman.graphics;
 
-import bomberman.graphics.Tiles;
-import bomberman.graphics.RenderHandler;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -49,20 +48,16 @@ public class Map {
         }        
     }
     
-    private void fillBush(){
-        try {
-            Scanner scan = new Scanner(new File("src/bomberman/assets/map.txt"));
+    private void fillBush(){        
+        Scanner scan = new Scanner(getClass().getResourceAsStream("/bomberman/assets/map.txt"));
+
+        while(scan.hasNext()){
+            String[] splitted = scan.nextLine().split("-");
+            int x = Integer.parseInt(splitted[0]);
+            int y = Integer.parseInt(splitted[1]);
             
-            while(scan.hasNext()){
-                String[] splitted = scan.nextLine().split("-");
-                int x = Integer.parseInt(splitted[0]);
-                int y = Integer.parseInt(splitted[1]);
-                                
-                bushTiles.add(new MappedTile(3, x, y));                
-            }
-        } catch (FileNotFoundException ex) {
-            System.err.println(ex.getMessage());
-        }               
+            bushTiles.add(new MappedTile(3, x, y));                
+        }                     
     }
     
     /**

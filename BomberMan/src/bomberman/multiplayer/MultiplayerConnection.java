@@ -56,10 +56,10 @@ public class MultiplayerConnection extends Thread{
             this.inputStream = new ObjectInputStream(serverSocket.getInputStream());
         } catch (UnknownHostException ex) {
             this.online = false;
-            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, "Errore connessione iniziale al server", ex);
         } catch (IOException ex) {
             this.online = false;
-            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, "Errore connessione iniziale al server", ex);
         }
         
         this.player = new Player(playerSheet, bombSheet, true);    
