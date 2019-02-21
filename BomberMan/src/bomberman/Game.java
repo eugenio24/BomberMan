@@ -15,13 +15,14 @@ import bombermanserver.messages.PlayerMessage;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -221,10 +222,14 @@ public class Game extends JFrame implements Runnable {
         BufferStrategy bufferStrategy = canvas.getBufferStrategy();
         
         if(isMultiplayer){
-            System.out.println("multiplayer");
-            while(!multiplayerHandler.isReady()){
-                //System.out.println("waiting opponent");
-            }
+            System.out.println("multiplayer");            
+            Image loading = new ImageIcon(getClass().getResource("/bomberman/assets/loading.gif")).getImage();                       
+            while(!multiplayerHandler.isReady()){                     
+                Graphics graphics = bufferStrategy.getDrawGraphics();
+                graphics.drawImage(loading, 10, 10, this);
+                graphics.dispose();
+                bufferStrategy.show();
+            }                        
         }else{
             System.out.println("singleplayer");
         }

@@ -26,12 +26,13 @@ public class Server extends Thread{
         while(true){
             try {
                 Socket client1 = Server.accept();
+                player1 = new Connect(client1);
                 System.out.println(client1.getInetAddress() + " is trying to connect");
+
                 Socket client2 = Server.accept();
+                player2 = new Connect(client2);
                 System.out.println(client2.getInetAddress() + " is trying to connect");
                 
-                player1 = new Connect(client1);
-                player2 = new Connect(client2);
                 
                 player1.addPlayer2(player2);
                 player2.addPlayer2(player1);
