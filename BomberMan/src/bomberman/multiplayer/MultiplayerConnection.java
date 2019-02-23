@@ -7,6 +7,7 @@ import bomberman.entities.Player;
 import bomberman.graphics.SpriteSheet;
 import bombermanserver.messages.BombMessage;
 import bombermanserver.messages.Message;
+import bombermanserver.messages.MessageType;
 import bombermanserver.messages.PlayerMessage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -109,6 +110,13 @@ public class MultiplayerConnection extends Thread{
     }
     
     /**
+     * Metodo che manda la sconfitta e si disconnette
+     */
+    public void lose(){
+        sendMessage(new Message(MessageType.LOSE));
+    }    
+    
+    /**
      * Player Getter
      * @return A New Player Enemy Updated
      */
@@ -184,7 +192,7 @@ public class MultiplayerConnection extends Thread{
     
     @Override
     public void run(){
-        while(true){
+        while(online){
             try {
                 Object msg = inputStream.readUnshared();
                 
@@ -202,6 +210,9 @@ public class MultiplayerConnection extends Thread{
                             readySemaphore.acquire();
                             ready = true;
                             readySemaphore.release();
+                            break;
+                        case WIN:
+                            System.out.println("Vinto"); 
                             break;
                         default: break;
                     }

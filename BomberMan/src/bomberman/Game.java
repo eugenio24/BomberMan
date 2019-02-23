@@ -16,6 +16,8 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -56,7 +58,15 @@ public class Game extends JFrame implements Runnable {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         setMinimumSize(new Dimension(978, 879));
-        setPreferredSize(new Dimension(978, 879));      
+        setPreferredSize(new Dimension(978, 879));   
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                disconnect();
+                e.getWindow().dispose();
+            }
+        });        
         
         add(canvas);
         setVisible(true);
@@ -218,7 +228,7 @@ public class Game extends JFrame implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run() {        
         BufferStrategy bufferStrategy = canvas.getBufferStrategy();
         
         if(isMultiplayer){
@@ -226,7 +236,7 @@ public class Game extends JFrame implements Runnable {
             Image loading = new ImageIcon(getClass().getResource("/bomberman/assets/loading.gif")).getImage();                       
             while(!multiplayerHandler.isReady()){                     
                 Graphics graphics = bufferStrategy.getDrawGraphics();
-                graphics.drawImage(loading, 10, 10, this);
+                graphics.drawImage(loading, 0, 0, this);
                 graphics.dispose();
                 bufferStrategy.show();
             }                        
@@ -252,10 +262,25 @@ public class Game extends JFrame implements Runnable {
             lastTime = now;
         }
         this.dispose();
+    }    
+    
+    /**
+     * Metodo per effettuare la disconnessione dal server
+     */
+    public void disconnect(){
+        if(isMultiplayer){
+            multiplayerHandler.lose();
+        }
     }
     
-    // GETTER
-
+    public void closeGame(){
+        disconnect();
+        thRunning = false;
+    }
+    
+    
+    // GETTERs
+    
     public KeyboardListener getKeyListener() {
         return keyListener;
     }    
@@ -263,12 +288,7 @@ public class Game extends JFrame implements Runnable {
     public Map getMap(){
         return this.map;
     }
-    
-    public void closeGame(){
-        thRunning = false;
-    }
-    
-    
+        
     public RenderHandler getRenderer(){
         return this.renderer;
     }
