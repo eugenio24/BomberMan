@@ -1,6 +1,7 @@
 
 package bomberman.graphics;
 
+import bomberman.entities.GameObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -66,15 +67,15 @@ public class Map {
      */
     public void render(RenderHandler renderer){
         backgroundTiles.forEach((t) -> {
-            tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
+            tileSet.renderTile(t.getTileID(), renderer, t.getX(), t.getY(), xZoom, yZoom);
         });
         
         indistructibleTiles.forEach((t) -> {
-            tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
+            tileSet.renderTile(t.getTileID(), renderer, t.getX(), t.getY(), xZoom, yZoom);
         });
         
         bushTiles.forEach((t) -> {
-            tileSet.renderTile(t.tileID, renderer, t.x, t.y, xZoom, yZoom);
+            tileSet.renderTile(t.getTileID(), renderer, t.getX(), t.getY(), xZoom, yZoom);
         });
     }
     
@@ -86,19 +87,34 @@ public class Map {
         return bushTiles.stream().anyMatch((blockTile) -> (playerRect.intersects(blockTile.getBounds())));
     }
     
-    private class MappedTile {
-        private int tileID;
-        private int x;
-        private int y;
-        
-        public MappedTile(int tile, int x, int y){
-            this.tileID = tile;
-            this.x = x;
-            this.y = y;
-        }     
-        
-        public java.awt.Rectangle getBounds(){
-            return new java.awt.Rectangle(x, y, 16*xZoom, 16*yZoom);
+    /**
+     * Metodo che controlla cosa c'è in una certa posizione
+     *      0 libero
+     *      1 indistruttibile
+     *      2 bush
+     * @param x x pos
+     * @param y y pos
+     * @return   0 libero  1 indistruttibile  2 bush
+     */
+    public int checkTile(int x, int y){
+        for(MappedTile tile: indistructibleTiles){
+            if(tile.getX() == x && tile.getY() == y)
+                return 1;
         }
+        
+        for(MappedTile tile: bushTiles){
+            if(tile.getX() == x && tile.getY() == y)
+                return 2;
+        }
+        
+        return 0;
+    }   
+    
+    /**
+     * Metodo per rimuovere un bush
+     * @param toRemove MappedTile da rimuovere
+     */
+    public void removeBush(MappedTile toRemove){       
+        bushTiles.removeIf(elem -> elem.equals(toRemove));
     }
 }

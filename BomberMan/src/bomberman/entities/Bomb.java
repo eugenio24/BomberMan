@@ -70,6 +70,7 @@ public class Bomb implements GameObject {
     public void update(Game game) {  
         if(control >= 3){
             System.out.println("booom");
+            game.addExplosion(new Explosion(sheet, bombRect.getX(), bombRect.getY(), game.getMap()));
             isExplosed = true;
         }
     }

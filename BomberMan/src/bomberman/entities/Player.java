@@ -106,8 +106,8 @@ public class Player implements GameObject{
         if(keyListener.down()){
             playerRect.setY(playerRect.getY()+speed);
             direction = Direction.DOWN;
-            if(playerRect.getY() > game.getContentPane().getHeight()-playerRect.getH()*3){
-                playerRect.setY(game.getContentPane().getHeight()-playerRect.getH()*3); 
+            if(playerRect.getY() > game.getContentPane().getHeight()-playerRect.getH()*4){
+                playerRect.setY(game.getContentPane().getHeight()-playerRect.getH()*4); 
             }
         }
         if(keyListener.left()){
@@ -120,8 +120,8 @@ public class Player implements GameObject{
         if(keyListener.right()){
             playerRect.setX(playerRect.getX()+speed);
             direction = Direction.RIGHT;
-            if(playerRect.getX() > game.getContentPane().getWidth()-playerRect.getW()*3){
-                playerRect.setX(game.getContentPane().getWidth()-playerRect.getW()*3); 
+            if(playerRect.getX() > game.getContentPane().getWidth()-playerRect.getW()*4){
+                playerRect.setX(game.getContentPane().getWidth()-playerRect.getW()*4); 
             }
         }
         
@@ -131,12 +131,12 @@ public class Player implements GameObject{
             game.addBomb(new Bomb(sheetBomb, bombPos[0], bombPos[1]), false);
         }
 
-        if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
+        if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX()+7, playerRect.getY()+7, 16*4-7, 16*4-7))){
             playerRect.setX(precX);
             playerRect.setY(precY);
         }
         
-        if(game.getMap().collideBush(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*3, 16*3))){
+        if(game.getMap().collideBush(new java.awt.Rectangle(playerRect.getX()+7, playerRect.getY()+7, 16*4-7, 16*4-7))){
             playerRect.setX(precX);
             playerRect.setY(precY);
         }

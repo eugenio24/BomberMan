@@ -3,6 +3,7 @@ package bomberman;
 
 import bomberman.graphics.Map;
 import bomberman.entities.Bomb;
+import bomberman.entities.Explosion;
 import bomberman.entities.GameObject;
 import bomberman.entities.Player;
 import bomberman.graphics.SpriteSheet;
@@ -118,6 +119,7 @@ public class Game extends JFrame implements Runnable {
         objectsToAdd.clear();
         
         removeExplosedBomb();
+        removeEndedExplosion();
         
         enemyObjects.forEach((obj) -> {            
             obj.update(this);
@@ -143,11 +145,11 @@ public class Game extends JFrame implements Runnable {
         }
         
         enemyObjects.forEach((obj) -> {            
-            obj.render(renderer, 3, 3);
+            obj.render(renderer, 4, 4);
         });        
         
         gameObjects.forEach((obj) -> {
-            obj.render(renderer, 3, 3);
+            obj.render(renderer, 4, 4);
         });                
                 
         renderer.render(graphics);
@@ -184,6 +186,14 @@ public class Game extends JFrame implements Runnable {
         this.enemy = en;
     }
     
+    /**
+     * Metodo per aggiungere un'esplosione
+     * @param explosion 
+     */
+    public void addExplosion(Explosion explosion){
+        objectsToAdd.add(explosion);
+    }
+    
     public void addBomb(Bomb bomb, boolean havePowerUp){
         if(!havePowerUp){
             if(!(gameObjects.stream().anyMatch((obj) -> obj instanceof Bomb) || objectsToAdd.stream().anyMatch((obj) -> obj instanceof Bomb))){
@@ -206,6 +216,9 @@ public class Game extends JFrame implements Runnable {
         this.enemyObjects.addAll(bombs);
     }
     
+    /**
+     * Metodo che rimuove le bombe esplose
+     */
     private void removeExplosedBomb(){
         ArrayList<Bomb> toRemove = new ArrayList<>();
         
@@ -227,6 +240,24 @@ public class Game extends JFrame implements Runnable {
         });
         
         enemyObjects.removeAll(toRemove);
+    }
+    
+    /**
+     * Metodo che rimuove le esplosioni finite
+     */
+    public void removeEndedExplosion(){
+        ArrayList<Explosion> toRemove = new ArrayList<>();
+        
+        gameObjects.forEach(obj -> {
+            if(obj instanceof Explosion){
+                if(((Explosion) obj).isEnded())
+                    toRemove.add((Explosion)obj);
+            }
+        });
+        
+        gameObjects.removeAll(toRemove);
+        
+        toRemove.clear();
     }
 
     @Override
