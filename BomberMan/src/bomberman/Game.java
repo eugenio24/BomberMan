@@ -23,8 +23,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 /**
  *
@@ -233,13 +235,14 @@ public class Game extends JFrame implements Runnable {
         
         if(isMultiplayer){
             System.out.println("multiplayer");            
-            Image loading = new ImageIcon(getClass().getResource("/bomberman/assets/loading.gif")).getImage();                       
+            Image loading = new ImageIcon(getClass().getResource("/bomberman/assets/loading.gif")).getImage();      
+
             while(!multiplayerHandler.isReady()){                     
                 Graphics graphics = bufferStrategy.getDrawGraphics();
                 graphics.drawImage(loading, 0, 0, this);
                 graphics.dispose();
                 bufferStrategy.show();
-            }                        
+            }
         }else{
             System.out.println("singleplayer");
         }
