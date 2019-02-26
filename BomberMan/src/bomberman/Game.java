@@ -67,7 +67,6 @@ public class Game extends JFrame implements Runnable {
             @Override
             public void windowClosing(WindowEvent e) {
                 disconnect();
-                e.getWindow().dispose();
             }
         });        
         
@@ -307,11 +306,22 @@ public class Game extends JFrame implements Runnable {
         }
     }
     
+    public void loseGame(){
+        closeGame();
+        System.out.println("HAI PERSO!");
+    }
+    
     public void closeGame(){
         disconnect();
         thRunning = false;
     }
     
+    public boolean collideExplosion(java.awt.Rectangle playerRect){
+        if (gameObjects.stream().filter((obj) -> (obj instanceof Explosion)).anyMatch((obj) -> (((Explosion)obj).collide(playerRect)))) {
+            return true;    
+        }
+        return false;
+    }
     
     // GETTERs
     

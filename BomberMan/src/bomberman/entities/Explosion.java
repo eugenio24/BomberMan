@@ -108,6 +108,18 @@ public class Explosion implements GameObject{
         }
     }
     
+    /**
+     * Metodo che cotrolla le collisioni
+     * @param playerRect Player Rectangle
+     * @return true if collide
+     */
+    public boolean collide(java.awt.Rectangle playerRect){
+        if(explosionsRects.stream().anyMatch((exp) -> (exp.getBounds().intersects(playerRect)))) {
+            return true;
+        }
+        return false;
+    }
+    
     public boolean isEnded(){
         return this.explosionEnded;
     }
@@ -124,6 +136,10 @@ public class Explosion implements GameObject{
         public MappedExplosion(Rectangle rect, Sprite sprite) {
             this.rect = rect;
             this.sprite = sprite;
-        }        
-    }
+        }
+
+        public java.awt.Rectangle getBounds(){
+            return new java.awt.Rectangle(rect.getX(), rect.getY(), 16*4, 16*4);
+        }
+    }    
 }

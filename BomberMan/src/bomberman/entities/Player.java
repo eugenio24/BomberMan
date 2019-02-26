@@ -87,7 +87,7 @@ public class Player implements GameObject{
         
                 
         return new int[] {x, y};
-    }    
+    }        
 
     @Override
     public void update(Game game) {
@@ -134,6 +134,10 @@ public class Player implements GameObject{
         if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX()+7, playerRect.getY()+7, 16*4-7, 16*4-7))){
             playerRect.setX(precX);
             playerRect.setY(precY);
+        }
+        
+        if(game.collideExplosion(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*4, 16*4))){
+            game.loseGame();
         }
         
         if(game.getMap().collideBush(new java.awt.Rectangle(playerRect.getX()+7, playerRect.getY()+7, 16*4-7, 16*4-7))){
