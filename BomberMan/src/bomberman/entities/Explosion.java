@@ -63,7 +63,7 @@ public class Explosion implements GameObject{
         
         //destra
         int result = map.checkTile(x+(16*4), y);
-        if(x+(16*4) <= 978 && result != 1){
+        if(x+(16*4) < 960 && result != 1){
             explosionsRects.add(new MappedExplosion(new Rectangle(x+(16*4), y, 16*4, 16*4), sheet.getSprite(3, 5)));  
             if(result == 2)
                 map.removeBush(new MappedTile(3, x+(16*4), y));
@@ -87,7 +87,7 @@ public class Explosion implements GameObject{
         
         //giu
         result = map.checkTile(x, y+(16*4));
-        if(y+(16*4) <= 879 && result != 1){
+        if(y+(16*4) < 832 && result != 1){
             explosionsRects.add(new MappedExplosion(new Rectangle(x, y+(16*4), 16*4, 16*4), sheet.getSprite(7, 2)));    
             if(result == 2)
                 map.removeBush(new MappedTile(3, x, y+(16*4)));
