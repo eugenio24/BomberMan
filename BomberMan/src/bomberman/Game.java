@@ -24,10 +24,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 /**
  *
@@ -67,16 +65,15 @@ public class Game extends JFrame implements Runnable {
             @Override
             public void windowClosing(WindowEvent e) {
                 disconnect();
-                e.getWindow().dispose();
             }
         });        
         
         add(canvas);
         setVisible(true);
-        canvas.createBufferStrategy(3);
-                       
         pack();        
         setLocationRelativeTo(null);        
+        canvas.createBufferStrategy(3);
+                       
         
         renderer = new RenderHandler(getContentPane().getWidth(), getContentPane().getHeight());
         sheet = new SpriteSheet(loadImage("/bomberman/assets/SpritesGame.png"));
@@ -102,7 +99,7 @@ public class Game extends JFrame implements Runnable {
         canvas.requestFocus();
      
         this.multiplayerHandler = new MultiplayerConnection("127.0.0.1", 4000, new SpriteSheet(loadImage("/bomberman/assets/playerSpriteSheet.png")), sheet);
-        this.isMultiplayer = this.multiplayerHandler.isConnected();    
+        this.isMultiplayer = this.multiplayerHandler.isConnected();
         this.multiplayerHandler.update(this);
     }
        
@@ -141,7 +138,7 @@ public class Game extends JFrame implements Runnable {
         map.render(renderer);
         
         if(isMultiplayer){
-            enemy.render(renderer, 3, 3);
+            enemy.render(renderer, 4, 4);
         }
         
         enemyObjects.forEach((obj) -> {            
@@ -151,7 +148,7 @@ public class Game extends JFrame implements Runnable {
         gameObjects.forEach((obj) -> {
             obj.render(renderer, 4, 4);
         });                
-                
+        
         renderer.render(graphics);
 
         graphics.dispose();
@@ -171,8 +168,7 @@ public class Game extends JFrame implements Runnable {
             formattedImage.getGraphics().drawImage(loadedImage, 0, 0, null);
 
             return formattedImage;
-        }
-        catch(IOException ex) {
+        } catch(IOException ex) {
             System.err.println(ex.getMessage());
             return null;
         }
