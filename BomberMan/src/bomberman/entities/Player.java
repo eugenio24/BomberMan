@@ -26,10 +26,12 @@ public class Player implements GameObject{
      * @param sheet SpriteSheet player 
      * @param sheetBomb SpriteSheet bomb
      * @param isEnemy Boolean true if enemy
+     * @param xPos Player x Position
+     * @param yPos Player y Position
      */
-    public Player(SpriteSheet sheet, SpriteSheet sheetBomb, boolean isEnemy){
+    public Player(SpriteSheet sheet, SpriteSheet sheetBomb, boolean isEnemy, int xPos, int yPos){
         this.direction = Direction.DOWN;
-        this.playerRect = new Rectangle(0, 0, 16, 16);        
+        this.playerRect = new Rectangle(xPos, yPos, 64, 64);        
         
         this.sheet = sheet;
         this.sheet.loadSprites(16, 16);
@@ -73,8 +75,8 @@ public class Player implements GameObject{
                 sprite = sheet.getSprite(0, y);
                 break;
         }
-               
-        renderer.renderSprite(sprite, playerRect.getX(), playerRect.getY(), xZoom, yZoom);
+         
+        renderer.renderSprite(sprite, playerRect.getX(), playerRect.getY(), xZoom, yZoom);    
     }
     
     /**
@@ -84,8 +86,7 @@ public class Player implements GameObject{
     public int[] calculateBombPos(){
         int x = (int)Math.round((playerRect.getX()/64.0)-0.25)*64;
         int y = (int)Math.round((playerRect.getY()/64.0)-0.25)*64;
-        
-                
+                        
         return new int[] {x, y};
     }        
 
@@ -106,8 +107,8 @@ public class Player implements GameObject{
         if(keyListener.down()){
             playerRect.setY(playerRect.getY()+speed);
             direction = Direction.DOWN;
-            if(playerRect.getY() > game.getContentPane().getHeight()-playerRect.getH()*4){
-                playerRect.setY(game.getContentPane().getHeight()-playerRect.getH()*4); 
+            if(playerRect.getY() > game.getContentPane().getHeight()-playerRect.getH()){
+                playerRect.setY(game.getContentPane().getHeight()-playerRect.getH());
             }
         }
         if(keyListener.left()){
@@ -120,8 +121,8 @@ public class Player implements GameObject{
         if(keyListener.right()){
             playerRect.setX(playerRect.getX()+speed);
             direction = Direction.RIGHT;
-            if(playerRect.getX() > game.getContentPane().getWidth()-playerRect.getW()*4){
-                playerRect.setX(game.getContentPane().getWidth()-playerRect.getW()*4); 
+            if(playerRect.getX() > game.getContentPane().getWidth()-playerRect.getW()){
+                playerRect.setX(game.getContentPane().getWidth()-playerRect.getW()); 
             }
         }
         
@@ -131,16 +132,16 @@ public class Player implements GameObject{
             game.addBomb(new Bomb(sheetBomb, bombPos[0], bombPos[1]), false);
         }
 
-        if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX()+7, playerRect.getY()+7, 16*4-7, 16*4-7))){
+        if(game.getMap().collideIndestructibleBlock(new java.awt.Rectangle(playerRect.getX()+5, playerRect.getY()+5, (16*4)-10, (16*4)-10))){
             playerRect.setX(precX);
             playerRect.setY(precY);
         }
         
-        if(game.collideExplosion(new java.awt.Rectangle(playerRect.getX(), playerRect.getY(), 16*4, 16*4))){
-            game.loseGame();
+        if(game.collideExplosion(new java.awt.Rectangle(playerRect.getX()+5, playerRect.getY()+5, (16*4)-10, (16*4)-10))){
+            game.sendLose();
         }
         
-        if(game.getMap().collideBush(new java.awt.Rectangle(playerRect.getX()+7, playerRect.getY()+7, 16*4-7, 16*4-7))){
+        if(game.getMap().collideBush(new java.awt.Rectangle(playerRect.getX()+5, playerRect.getY()+5, (16*4)-10, (16*4)-10))){
             playerRect.setX(precX);
             playerRect.setY(precY);
         }

@@ -28,15 +28,13 @@ public class RenderHandler {
         graphics.drawImage(view, 0, 0, view.getWidth(), view.getHeight(), null);
     }
     
-    public void renderRectangle(Rectangle rectangle, int xZoom, int yZoom)
-    {
+    public void renderRectangle(Rectangle rectangle, int xZoom, int yZoom) {
         int[] rectanglePixels = rectangle.getPixels();
         if(rectanglePixels != null)
             renderArray(rectanglePixels, rectangle.getW(), rectangle.getH(), rectangle.getX(), rectangle.getY(), xZoom, yZoom);	
     }
     
-    public void renderImage(BufferedImage image, int xPosition, int yPosition, int xZoom, int yZoom)
-    {
+    public void renderImage(BufferedImage image, int xPosition, int yPosition, int xZoom, int yZoom) {
         int[] imagePixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         renderArray(imagePixels, image.getWidth(), image.getHeight(), xPosition, yPosition, xZoom, yZoom);
     }
@@ -45,8 +43,7 @@ public class RenderHandler {
         renderArray(sprite.getPixels(), sprite.getWidth(), sprite.getHeight(), xPosition, yPosition, xZoom, yZoom);
     }
 
-    public void renderArray(int[] renderPixels, int renderWidth, int renderHeight, int xPosition, int yPosition, int xZoom, int yZoom) 
-    {
+    public void renderArray(int[] renderPixels, int renderWidth, int renderHeight, int xPosition, int yPosition, int xZoom, int yZoom)  {
         for(int y = 0; y < renderHeight; y++)
             for(int x = 0; x < renderWidth; x++)
                 for(int yZoomPosition = 0; yZoomPosition < yZoom; yZoomPosition++)

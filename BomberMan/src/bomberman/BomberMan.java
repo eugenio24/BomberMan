@@ -19,13 +19,13 @@ public class BomberMan {
     }
     
     //Mostra il menù
-    public void launchMenu(){
-        MenuJFrame menuFrame = new MenuJFrame(this);
+    public static void launchMenu(){
+        MenuJFrame menuFrame = new MenuJFrame();
         menuFrame.setVisible(true);
     }
     
     //Lancia il gioco
-    public void launchGame(){
+    public static void launchGame(){
         Game game = new Game();
         new Thread(game).start();
     }

@@ -8,10 +8,15 @@ import bomberman.entities.GameObject;
 import bomberman.entities.Player;
 import bomberman.graphics.SpriteSheet;
 import bomberman.graphics.EscMenu;
+import bomberman.graphics.LoseFrame;
+import bomberman.graphics.MenuJFrame;
 import bomberman.graphics.Tiles;
 import bomberman.graphics.RenderHandler;
+import bomberman.graphics.WinFrame;
 import bomberman.multiplayer.MultiplayerConnection;
 import bombermanserver.messages.BombMessage;
+import bombermanserver.messages.Message;
+import bombermanserver.messages.MessageType;
 import bombermanserver.messages.PlayerMessage;
 import java.awt.Canvas;
 import java.awt.Dimension;
@@ -44,7 +49,7 @@ public class Game extends JFrame implements Runnable {
     private MouseListener mouseListener;
     
     private final Map map;
-    private final Player player;
+    private Player player;
     private Player enemy;
     
     private boolean isMultiplayer = false;
@@ -64,7 +69,7 @@ public class Game extends JFrame implements Runnable {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                disconnect();
+                sendLose();                
             }
         });        
         
@@ -72,8 +77,7 @@ public class Game extends JFrame implements Runnable {
         setVisible(true);
         pack();        
         setLocationRelativeTo(null);        
-        canvas.createBufferStrategy(3);
-                       
+        canvas.createBufferStrategy(3);                       
         
         renderer = new RenderHandler(getContentPane().getWidth(), getContentPane().getHeight());
         sheet = new SpriteSheet(loadImage("/bomberman/assets/SpritesGame.png"));
@@ -84,13 +88,12 @@ public class Game extends JFrame implements Runnable {
 
         map = new Map(tiles, 4, 4, getWidth(), getHeight());
         
-        player = new Player(new SpriteSheet(loadImage("/bomberman/assets/playerSpriteSheet.png")), sheet, false);
+//        player = new Player(new SpriteSheet(loadImage("/bomberman/assets/playerSpriteSheet.png")), sheet, false, 0, 0);
         
         escMenu = new EscMenu(this);
         escMenu.addMouseListener(mouseListener);
         
-
-        gameObjects.add(player);
+//        gameObjects.add(player);
         gameObjects.add(escMenu);
         
         mouseListener = new MouseListener(escMenu);
@@ -107,6 +110,14 @@ public class Game extends JFrame implements Runnable {
      * Metodo per gestire la logica
      */
     public void update() {
+        if(multiplayerHandler.getGameStatus() == GameStatus.WIN){
+            win();
+        }
+        
+        if(multiplayerHandler.getGameStatus() == GameStatus.LOSE){
+            lose();
+        }
+        
         if(isMultiplayer){
             this.multiplayerHandler.update(this);          
             multiplayerHandler.sendMessage(new PlayerMessage(player.getX(), player.getY(), player.getDirection()));
@@ -270,8 +281,14 @@ public class Game extends JFrame implements Runnable {
                 graphics.dispose();
                 bufferStrategy.show();
             }
+            
+            int[] pos = multiplayerHandler.getMyPosition();
+            player = new Player(new SpriteSheet(loadImage("/bomberman/assets/playerSpriteSheet.png")), sheet, false, pos[0], pos[1]);
+            gameObjects.add(player);
         }else{
             System.out.println("singleplayer");
+            player = new Player(new SpriteSheet(loadImage("/bomberman/assets/playerSpriteSheet.png")), sheet, false, 0, 0);
+            gameObjects.add(player);
         }
         
         long lastTime = System.nanoTime();
@@ -292,32 +309,34 @@ public class Game extends JFrame implements Runnable {
             lastTime = now;
         }
         this.dispose();
-    }    
+    }       
     
-    /**
-     * Metodo per effettuare la disconnessione dal server
-     */
-    public void disconnect(){
-        if(isMultiplayer){
-            multiplayerHandler.lose();
-        }
-    }
-    
-    public void loseGame(){
-        closeGame();
-        System.out.println("HAI PERSO!");
-    }
-    
-    public void closeGame(){
-        disconnect();
-        thRunning = false;
-    }
+    public void sendLose(){
+        if(isMultiplayer)
+            multiplayerHandler.sendMessage(new Message(MessageType.LOSE));
+        else
+            lose();
+    }   
     
     public boolean collideExplosion(java.awt.Rectangle playerRect){
         if (gameObjects.stream().filter((obj) -> (obj instanceof Explosion)).anyMatch((obj) -> (((Explosion)obj).collide(playerRect)))) {
             return true;    
         }
         return false;
+    }
+    
+    public void win(){
+        closeMatch();
+        new WinFrame().setVisible(true);
+    }
+    
+    public void lose(){
+        closeMatch();
+        new LoseFrame().setVisible(true);
+    }
+    
+    public void closeMatch(){
+        this.thRunning = false;        
     }
     
     // GETTERs

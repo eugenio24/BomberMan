@@ -2,10 +2,12 @@
 package bomberman.multiplayer;
 
 import bomberman.Game;
+import bomberman.GameStatus;
 import bomberman.entities.Bomb;
 import bomberman.entities.Player;
 import bomberman.graphics.SpriteSheet;
 import bombermanserver.messages.BombMessage;
+import bombermanserver.messages.InitialPositionMessage;
 import bombermanserver.messages.Message;
 import bombermanserver.messages.MessageType;
 import bombermanserver.messages.PlayerMessage;
@@ -40,6 +42,11 @@ public class MultiplayerConnection extends Thread{
     private boolean online = false;
     private boolean ready = false;
     private Semaphore readySemaphore = new Semaphore(1);
+    private GameStatus gameStatus = GameStatus.PLAYING;
+    private Semaphore statusSemaphore = new Semaphore(1);
+    
+    private int[] myPosition = null;
+    private Semaphore myPosSemaphore = new Semaphore(1);
     
     /**
      * Constructor
@@ -63,7 +70,7 @@ public class MultiplayerConnection extends Thread{
             Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, "Errore connessione iniziale al server", ex);
         }
         
-        this.player = new Player(playerSheet, bombSheet, true);    
+        this.player = new Player(playerSheet, bombSheet, true, 0, 0);    
         this.bombSpriteSheet = bombSheet;
                      
         if(online){            
@@ -98,6 +105,71 @@ public class MultiplayerConnection extends Thread{
     }
     
     /**
+     * GameStatus GETTER
+     * @return GameStatus
+     */
+    public GameStatus getGameStatus(){
+        GameStatus temp = null;
+        
+        try {            
+            statusSemaphore.acquire();
+            temp = this.gameStatus;
+            statusSemaphore.release();            
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return temp;
+    }
+    
+    /**
+     * GameStatus Setter
+     * @param value GameStatus value
+     */
+    private void setGameStatus(GameStatus value){
+        try {            
+            statusSemaphore.acquire();
+            this.gameStatus = value;
+            statusSemaphore.release();            
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * MyPosition GETTER
+     * @return int [x, y]
+     */
+    public int[] getMyPosition(){
+        int[] temp = null;
+        
+        try {            
+            myPosSemaphore.acquire();
+            temp = this.myPosition;
+            myPosSemaphore.release();            
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return temp;
+    }
+    
+    /**
+     * MyPosition Setter
+     * @param x x Position
+     * @param y y Position
+     */
+    private void setMyPosition(int x, int y){
+        try {            
+            myPosSemaphore.acquire();
+            this.myPosition = new int[] {x, y};
+            myPosSemaphore.release();            
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
      * Metodo per mandare un messaggio al server
      * @param msg Message messaggio da mandare
      */
@@ -107,14 +179,7 @@ public class MultiplayerConnection extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(MultiplayerConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    /**
-     * Metodo che manda la sconfitta e si disconnette
-     */
-    public void lose(){
-        sendMessage(new Message(MessageType.LOSE));
-    }    
+    }   
     
     /**
      * Player Getter
@@ -204,16 +269,25 @@ public class MultiplayerConnection extends Thread{
                     updateBomb((BombMessage)msg);
                 }
                 
+                if(msg instanceof InitialPositionMessage){
+                    setMyPosition(((InitialPositionMessage)msg).getX(), ((InitialPositionMessage)msg).getY());
+                }                       
+                
                 if(msg instanceof Message){
-                    switch(((Message) msg).getMessageType()){
+                    switch(((Message) msg).getMessageType()){                        
                         case CLIENT_CONNECTED:
                             readySemaphore.acquire();
                             ready = true;
                             readySemaphore.release();
                             break;
                         case WIN:
+                            setGameStatus(GameStatus.WIN);
                             System.out.println("Vinto"); 
-                            break;
+                            return;
+                        case LOSE:
+                            setGameStatus(GameStatus.LOSE);
+                            System.out.println("Lose");
+                            return;
                         default: break;
                     }
                 }

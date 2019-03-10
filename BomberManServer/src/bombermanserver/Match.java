@@ -54,20 +54,20 @@ public class Match {
         } catch (InterruptedException ex) {
             Logger.getLogger(Match.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    public void playerWin(Player p){
-        
-    }
+    }   
     
     public void playerLose(Player p){
         try{
             if(p.equals(player1)){
                 player2.win();      
                 player2.join();
+                player1.lose(); 
+                player1.join();
             }else{
                 player1.win(); 
                 player1.join();
+                player2.lose();      
+                player2.join();
             }             
         } catch (InterruptedException ex) {
             Logger.getLogger(Match.class.getName()).log(Level.SEVERE, null, ex);

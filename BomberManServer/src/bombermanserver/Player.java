@@ -5,6 +5,7 @@ package bombermanserver;
  *
  * @author matteo.devigili
  */
+import bombermanserver.messages.InitialPositionMessage;
 import bombermanserver.messages.Message;
 import bombermanserver.messages.MessageType;
 import java.io.IOException;
@@ -32,7 +33,7 @@ class Player extends Thread {
      * Constructor
      * @param clientSocket Socket
      */
-    public Player(Socket clientSocket) {
+    public Player(Socket clientSocket, boolean isFirstPlayer) {
         client = clientSocket;
         
         try {
@@ -46,6 +47,14 @@ class Player extends Thread {
                 Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, e);
             }
         }
+        
+        int x = 0, y = 0;        
+        if(isFirstPlayer){
+            x = 64*14;
+            y = 64*12;
+        }       
+        
+        sendObject(new InitialPositionMessage(x, y));
     }
     
     /**
@@ -74,9 +83,6 @@ class Player extends Thread {
 
                 if (obj instanceof Message) {
                     switch (((Message) obj).getMessageType()) {
-                        case WIN:                             
-                            match.playerWin(this);           
-                            break;
                         case LOSE:                            
                             match.playerLose(this);
                             return;
@@ -107,6 +113,14 @@ class Player extends Thread {
      */
     public void win(){        
         sendObject(new Message(MessageType.WIN));        
+        stopRunning();
+    }
+    
+    /**
+     * Metodo per comunicare la sconfitta
+     */
+    public void lose(){
+        sendObject(new Message(MessageType.LOSE));        
         stopRunning();
     }
     

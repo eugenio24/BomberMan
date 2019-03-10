@@ -27,11 +27,11 @@ public class Server extends Thread{
         while(true){            
             try {
                 Socket client1 = Server.accept();
-                Player player1 = new Player(client1);
+                Player player1 = new Player(client1, true);
                 System.out.println(client1.getInetAddress() + " is trying to connect");
 
                 Socket client2 = Server.accept();
-                Player player2 = new Player(client2);
+                Player player2 = new Player(client2, false);
                 System.out.println(client2.getInetAddress() + " is trying to connect");
                 
                 this.matchs.add(new Match(player1, player2)); 

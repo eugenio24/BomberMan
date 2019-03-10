@@ -54,7 +54,7 @@ public class EscMenu implements GameObject{
     }
     
     public void exitClicked(){
-        game.closeGame();
+        game.sendLose();
     }
     
     public void optionsClicked(){
