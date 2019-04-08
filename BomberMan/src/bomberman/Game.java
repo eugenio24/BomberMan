@@ -28,6 +28,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -274,12 +276,17 @@ public class Game extends JFrame implements Runnable {
         if(isMultiplayer){
             System.out.println("multiplayer");            
             Image loading = new ImageIcon(getClass().getResource("/bomberman/assets/loading.gif")).getImage();      
-
+            
             while(!multiplayerHandler.isReady()){                     
                 Graphics graphics = bufferStrategy.getDrawGraphics();
                 graphics.drawImage(loading, 0, 0, this);
                 graphics.dispose();
                 bufferStrategy.show();
+                try {
+                    Thread.sleep(30);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             
             int[] pos = multiplayerHandler.getMyPosition();
@@ -297,6 +304,11 @@ public class Game extends JFrame implements Runnable {
 
         // GAME LOOP
         while(thRunning) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
             long now = System.nanoTime();
 
             changeInSeconds += (now - lastTime) / nanoSecondConversion;
@@ -319,10 +331,7 @@ public class Game extends JFrame implements Runnable {
     }   
     
     public boolean collideExplosion(java.awt.Rectangle playerRect){
-        if (gameObjects.stream().filter((obj) -> (obj instanceof Explosion)).anyMatch((obj) -> (((Explosion)obj).collide(playerRect)))) {
-            return true;    
-        }
-        return false;
+        return gameObjects.stream().filter((obj) -> (obj instanceof Explosion)).anyMatch((obj) -> (((Explosion)obj).collide(playerRect)));
     }
     
     public void win(){
