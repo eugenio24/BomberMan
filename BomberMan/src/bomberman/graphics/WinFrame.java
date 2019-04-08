@@ -20,15 +20,15 @@ public class WinFrame extends javax.swing.JFrame {
         initComponents();
         
         //Rende trasparenti i button
-        btnStart.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnStart.setOpaque(false);
-        btnStart.setContentAreaFilled(false);
-        btnStart.setBorderPainted(false);
+        btnRestart.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnRestart.setOpaque(false);
+        btnRestart.setContentAreaFilled(false);
+        btnRestart.setBorderPainted(false);
 
-        btnExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnExit.setOpaque(false);
-        btnExit.setContentAreaFilled(false);
-        btnExit.setBorderPainted(false);
+        btnMenu.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnMenu.setOpaque(false);
+        btnMenu.setContentAreaFilled(false);
+        btnMenu.setBorderPainted(false);
         
         pack();
     }
@@ -42,31 +42,31 @@ public class WinFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnStart = new javax.swing.JButton();
-        btnExit = new javax.swing.JButton();
+        btnRestart = new javax.swing.JButton();
+        btnMenu = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(978, 879));
         getContentPane().setLayout(null);
 
-        btnStart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        btnStart.addActionListener(new java.awt.event.ActionListener() {
+        btnRestart.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnRestart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnStartActionPerformed(evt);
+                btnRestartActionPerformed(evt);
             }
         });
-        getContentPane().add(btnStart);
-        btnStart.setBounds(540, 380, 350, 90);
+        getContentPane().add(btnRestart);
+        btnRestart.setBounds(540, 380, 350, 90);
 
-        btnExit.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        btnExit.addActionListener(new java.awt.event.ActionListener() {
+        btnMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        btnMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnExitActionPerformed(evt);
+                btnMenuActionPerformed(evt);
             }
         });
-        getContentPane().add(btnExit);
-        btnExit.setBounds(540, 620, 350, 90);
+        getContentPane().add(btnMenu);
+        btnMenu.setBounds(540, 620, 350, 90);
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bomberman/assets/winFrameBackground.jpg"))); // NOI18N
         getContentPane().add(jLabel1);
@@ -76,14 +76,15 @@ public class WinFrame extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+    private void btnRestartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestartActionPerformed
+        this.dispose();
+        BomberMan.launchGame();
+    }//GEN-LAST:event_btnRestartActionPerformed
+
+    private void btnMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuActionPerformed
         this.dispose();
         BomberMan.launchMenu();
-    }//GEN-LAST:event_btnStartActionPerformed
-
-    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_btnExitActionPerformed
+    }//GEN-LAST:event_btnMenuActionPerformed
 
     /**
      * @param args the command line arguments
@@ -116,8 +117,8 @@ public class WinFrame extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnExit;
-    private javax.swing.JButton btnStart;
+    private javax.swing.JButton btnMenu;
+    private javax.swing.JButton btnRestart;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
